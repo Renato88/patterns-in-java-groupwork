@@ -98,5 +98,53 @@ public class DataStore
                     + "references " + ETableNames.CHARGE_ACCOUNTS.sqlname() + "(" + EColumnNames.CA_ID.sqlname() + ") );";
         }
     };
-
+    
+//    void insertRecord(Record rec)
+//    {
+//        helper.execCommand(rec.toSqlString());
+//    }
+    
+    public boolean insert (ETableNames table, Object[] obj)
+    {
+        switch (table)
+        {
+            case CHARGE_ACCOUNTS:
+            {
+                // String sqlString = "...";
+                // helper.execute(sqlString);
+                break;
+            }
+            case TRANZACTIONS:
+            {
+                
+                break;
+            }
+        }
+        return true;
+    }
 }
+
+//interface Record
+//{
+//    
+//}
+//
+//class TranzactionRecord implements Record
+//{
+//    long id;
+//    String name;
+//    
+//    public String toSqlInsert()
+//    {
+//        return "insert table ( )";
+//    }
+//}
+//
+//class Folyoszamlak implements Record
+//{
+//    
+//    public String toSqlInsert()
+//    {
+//        
+//    }
+//}
