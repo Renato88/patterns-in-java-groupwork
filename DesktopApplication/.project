@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>CoreLibrary</name>
+			<type>2</type>
+			<location>/home/polpe/Programming/12_Java/patterns-in-java-groupwork/CoreLibrary/src</location>
+		</link>
+	</linkedResources>
 </projectDescription>

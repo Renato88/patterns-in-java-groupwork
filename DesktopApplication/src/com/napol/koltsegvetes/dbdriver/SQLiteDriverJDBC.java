@@ -5,8 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.napol.koltsegvetes.db.EColumnNames;
 import com.napol.koltsegvetes.dbinterface.ISQLCommands;
 import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
+import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
 /** 
  * @author Péter Polcz <ppolcz@gmail.com>
@@ -86,6 +88,13 @@ public class SQLiteDriverJDBC implements ISQLiteHelper
     public synchronized void onClose()
     {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public AbstractQuery execQuery(String sqlcommand, EColumnNames cols[])
+    {
+        
+        return null;
     }
 
 }

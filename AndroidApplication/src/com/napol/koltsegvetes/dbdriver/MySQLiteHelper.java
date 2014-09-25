@@ -10,6 +10,7 @@ import com.napol.koltsegvetes.dbinterface.ISQLCommands;
 
 /**
  * @author Polcz Péter <ppolcz@gmail.com>
+ * Final output of the system: textured city model generated from the LiDAR point clouds and satellite images. In the model are also enhanced the detected vegetation points.
  */
 public class MySQLiteHelper 
 {
@@ -35,84 +36,28 @@ public class MySQLiteHelper
         return this;
     }
 
-    public void onCreate()
+    public synchronized void onCreate()
     {
         helper.onCreate(db);
     }
 
-    public void onUpgrade(int newVersion)
+    public synchronized  void onUpgrade(int newVersion)
     {
         helper.onUpgrade(db, 0, newVersion);
     }
 
-    public void onDestroy()
-    {
-        // TODO
-    }
-
-    public void onOpen()
+    public synchronized  void onDestroy()
     {
         // TODO Auto-generated method stub
     }
 
-    public void onClose()
+    public synchronized  void onOpen()
+    {
+        // TODO Auto-generated method stub
+    }
+
+    public synchronized  void onClose()
     {
         // TODO Auto-generated method stub
     }
 }
-
-//public class MySQLiteHelper implements ISQLiteHelper
-//{
-//    // the Android specific SQLite database manager object
-//    private SQLiteDatabase db;
-//    
-//    // singleton instance
-//    private static ISQLiteHelper instance;
-//
-//    // Android specific SQLite helper
-//    private AndroidSQLiteHelper helper;
-//
-//    public static synchronized ISQLiteHelper instance()
-//    {
-//        if (instance == null) instance = new MySQLiteHelper();
-//        return instance;
-//    }
-//
-//    @Override
-//    public synchronized ISQLiteHelper setSqlInterface(ISQLCommands sql)
-//    {
-//        helper = new AndroidSQLiteHelper(MainActivity.getContext(), sql);
-//        return this;
-//    }
-//
-//    @Override
-//    public void onCreate()
-//    {
-//        helper.onCreate(db);
-//    }
-//
-//    @Override
-//    public void onUpgrade(int newVersion)
-//    {
-//        helper.onUpgrade(db, 0, newVersion);
-//    }
-//
-//    @Override
-//    public void onDestroy()
-//    {
-//        // TODO
-//    }
-//
-//    @Override
-//    public void onOpen()
-//    {
-//        // TODO Auto-generated method stub
-//    }
-//
-//    @Override
-//    public void onClose()
-//    {
-//        // TODO Auto-generated method stub
-//    }
-//
-//}
