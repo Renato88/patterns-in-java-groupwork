@@ -1,5 +1,7 @@
 package com.napol.koltsegvetes.db;
 
+import java.util.Locale;
+
 /** 
  * @author Péter Polcz <ppolcz@gmail.com>
  * 
@@ -12,7 +14,7 @@ public enum ETableNames
     
     public String sqlname ()
     {
-        return name().toLowerCase();
+        return name().toLowerCase(Locale.getDefault());
     }
     
     public String sqlname(String prefix)

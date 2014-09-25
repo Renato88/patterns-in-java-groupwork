@@ -14,24 +14,12 @@ public class DataStore
 {
     private static final String DBNAME = "koltsegvetes.db";
 
-    // IGY KEZDTEM, DE SZERINTEM EZ IGY ELEG GAGYI
-    // public static final String TR_DATE = "date";
-    // public static final String TR_AMOUNT = "amount";
-    // public static final String TR_COMMENT = "comment";
-    // public static final String TR_ACCOUNT = "account";
-    // public static final String TR_GROUP = "group";
+    ISQLiteHelper helper;
 
-    // private static String sqlname(Field f) throws IllegalArgumentException,
-    // IllegalAccessException
-    // {
-    // return ((EColumnNames) (f.get(EColumnNames.INSTANCE))).sqlname();
-    // }
-    //
-    // private static String sqltype(Field f) throws IllegalArgumentException,
-    // IllegalAccessException
-    // {
-    // return ((EColumnNames) (f.get(EColumnNames.INSTANCE))).sqltype();
-    // }
+    public DataStore(ISQLiteHelper helper)
+    {
+        this.helper = helper;
+    }
 
     /** 
      * Generates a string which represents the declaration of the current column f 
@@ -109,11 +97,12 @@ public class DataStore
         }
     };
 
-    // void insertRecord(Record rec)
-    // {
-    // helper.execCommand(rec.toSqlString());
-    // }
-
+    /**
+     * Balazs elvileg ezt megirta
+     * @param table
+     * @param obj
+     * @return
+     */
     public boolean insert(ETableNames table, Object[] obj)
     {
         switch (table)
@@ -133,6 +122,25 @@ public class DataStore
         return true;
     }
 }
+
+// IGY KEZDTEM, DE SZERINTEM EZ IGY ELEG GAGYI
+// public static final String TR_DATE = "date";
+// public static final String TR_AMOUNT = "amount";
+// public static final String TR_COMMENT = "comment";
+// public static final String TR_ACCOUNT = "account";
+// public static final String TR_GROUP = "group";
+
+// private static String sqlname(Field f) throws IllegalArgumentException,
+// IllegalAccessException
+// {
+// return ((EColumnNames) (f.get(EColumnNames.INSTANCE))).sqlname();
+// }
+//
+// private static String sqltype(Field f) throws IllegalArgumentException,
+// IllegalAccessException
+// {
+// return ((EColumnNames) (f.get(EColumnNames.INSTANCE))).sqltype();
+// }
 
 // interface Record
 // {

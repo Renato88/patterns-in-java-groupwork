@@ -9,5 +9,6 @@ public interface ISQLCommands
 {
     public String getFilename();
     public int getVersion();
+    
     public String[] sqlCreateTableCommands();
 }

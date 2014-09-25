@@ -1,5 +1,7 @@
 package com.napol.koltsegvetes.dbinterface;
 
+import com.napol.koltsegvetes.db.EColumnNames;
+
 /** 
  * @author Péter Polcz <ppolcz@gmail.com>
  * 
@@ -8,14 +10,17 @@ package com.napol.koltsegvetes.dbinterface;
 public interface ISQLiteHelper 
 {
     // life cycle: [1] functions that can modify the database
-    public void onCreate();
-    public void onUpgrade(int newVersion);
-    public void onDestroy();
+    void onCreate();
+    void onUpgrade(int newVersion);
+    void onDestroy();
     
     // life cycle: [2] functions that cannot modify tha database
-    public void onOpen();
-    public void onClose();
+    void onOpen();
+    void onClose();
     
     // setters:
-    public ISQLiteHelper setSqlInterface(ISQLCommands sql);
+    ISQLiteHelper setSqlInterface(ISQLCommands sql);
+    
+    // supported SQL commands: insert, remove, update, select
+    AbstractQuery execQuery(String sqlcommand, EColumnNames cols[]);
 }

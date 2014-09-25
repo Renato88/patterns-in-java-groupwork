@@ -1,5 +1,8 @@
 package com.napol.koltsegvetes.db;
 
+import java.util.Date;
+import java.util.Locale;
+
 /** 
  * @author Péter Polcz <ppolcz@gmail.com>
  * 
@@ -20,18 +23,36 @@ public enum EColumnNames
     TR_CLUSTER("varchar(30)"), // a tranzakcio 'klasztere': mobilfeltoltes, napi szuksegletek, luxus stb...
     TR_REMARK("varchar(300)"), // megjegyzes, komment
 
-    INSTANCE("");
+    QR_PRETTY_DATE(String.class),
+    
+    INSTANCE(Object.class);
 
     private final String sqltype;
+    private final Class<?> javatype;
+    
+    private EColumnNames(Class<?> javatype)
+    {
+        this.sqltype = "NO_TYPE_SPECIFIED";
+        this.javatype = javatype;
+    }
     
     private EColumnNames(String sqltype)
     {
         this.sqltype = sqltype;
+
+        if (isDateType())
+            javatype = Date.class;
+        else if (sqltype.startsWith("varchar"))
+            javatype = String.class;
+        else if (sqltype.startsWith("integer"))
+            javatype = Integer.class;
+        else
+            javatype = Object.class;
     }
     
     public String sqlname()
     {
-        return name().toLowerCase();
+        return name().toLowerCase(Locale.getDefault());
     }
 
     public String sqltypeall()
@@ -46,6 +67,16 @@ public enum EColumnNames
     
     public String sqlname(String prefix)
     {
-        return prefix + "." + name().toLowerCase();
+        return prefix + "." + name().toLowerCase(Locale.getDefault());
+    }
+    
+    public Class<?> javatype()
+    {
+        return javatype;
+    }
+    
+    public boolean isDateType()
+    {
+        return name().contains("DATE") && sqltype.startsWith("varchar");
     }
 }
