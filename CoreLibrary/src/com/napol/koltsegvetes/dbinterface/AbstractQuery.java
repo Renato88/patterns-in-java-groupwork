@@ -10,6 +10,21 @@ public class AbstractQuery extends LinkedList<Object[]>
 
     protected EColumnNames[] types;
     
+    public EColumnNames[] getTypes ()
+    {
+        return types;
+    }
+    
+    public void setTypes (EColumnNames[] types)
+    {
+        this.types = types;
+    }
+    
+    public int getRecordLength()
+    {
+        return types.length;
+    }
+    
     public void setRecordLength(int n)
     {
         types = new EColumnNames[n];
@@ -19,6 +34,11 @@ public class AbstractQuery extends LinkedList<Object[]>
     {
         if (types == null || record.length < types.length) throw new IndexOutOfBoundsException(
             "record length smaller that expected, or not initialized");
+    }
+    
+    public void addRecord(Object... objs)
+    {
+        addLast(objs);
     }
     
     @Override

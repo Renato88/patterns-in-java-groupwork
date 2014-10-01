@@ -14,7 +14,7 @@ public interface ISQLiteHelper
     void onUpgrade(int newVersion);
     void onDestroy();
     
-    // life cycle: [2] functions that cannot modify tha database
+    // life cycle: [2] functions that cannot modify the database
     void onOpen();
     void onClose();
     

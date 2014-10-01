@@ -6,13 +6,15 @@ package com.napol.koltsegvetes.dbdriver;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.napol.koltsegvetes.MainActivity;
+import com.napol.koltsegvetes.db.EColumnNames;
+import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 import com.napol.koltsegvetes.dbinterface.ISQLCommands;
+import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
 
 /**
  * @author Polcz Péter <ppolcz@gmail.com>
- * Final output of the system: textured city model generated from the LiDAR point clouds and satellite images. In the model are also enhanced the detected vegetation points.
  */
-public class MySQLiteHelper 
+public class MySQLiteHelper implements ISQLiteHelper
 {
     // the Android specific SQLite database manager object
     private SQLiteDatabase db;
@@ -59,5 +61,12 @@ public class MySQLiteHelper
     public synchronized  void onClose()
     {
         // TODO Auto-generated method stub
+    }
+
+    @Override
+    public AbstractQuery execQuery(String sqlcommand, EColumnNames[] cols)
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

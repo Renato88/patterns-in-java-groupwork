@@ -79,4 +79,9 @@ public enum EColumnNames
     {
         return name().contains("DATE") && sqltype.startsWith("varchar");
     }
+    
+    public String toString(Object data)
+    {
+        return data.toString();
+    }
 }
