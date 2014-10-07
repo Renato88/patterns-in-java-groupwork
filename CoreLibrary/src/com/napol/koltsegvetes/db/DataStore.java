@@ -1,6 +1,5 @@
 package com.napol.koltsegvetes.db;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,86 +28,11 @@ public class DataStore
         this.helper.onCreate();
     }
 
-    /** 
-     * Generates a string which represents the declaration of the current column f 
-     * of the current table in the 'create table ...' command.
-     * Eq. 'create table table_name ( ..., <b>field_name integer primary key</b>, ... )'
-     * 
-     * @author Péter Polcz <ppolcz@gmail.com>
-     */
-    private static String sqlcoldecl(Field f)
-    {
-        try
-        {
-            EColumnNames self = (EColumnNames) (f.get(EColumnNames.INSTANCE));
-            return self.sqlname() + " " + self.sqltypeall();
-        }
-        catch (IllegalArgumentException e)
-        {
-            e.printStackTrace();
-            System.out.println("Problem with " + f.getName());
-            System.exit(0);
-        }
-        catch (IllegalAccessException e)
-        {
-            e.printStackTrace();
-            System.out.println("Problem with " + f.getName());
-            System.exit(0);
-        }
-        return "";
-    }
-
     /**
-     * Detecting foreign keys from the {@link EColumnNames} declarations.
-     * 
-     * @author Péter Polcz <ppolcz@gmail.com>
+     * @author Polcz Péter <ppolcz@gmail.com>
+     * @param prefix
+     * @return
      */
-    // private static String sqlforkey(Field f)
-    // {
-    // try
-    // {
-    // EColumnNames self = (EColumnNames) (f.get(EColumnNames.INSTANCE));
-    // EColumnNames ref = ((EColumnNames) (f.get(EColumnNames.INSTANCE))).ref();
-    // return ref == null ? null
-    // : ("foreign key (" + self.sqlname() + ") references " + ref.table().sqlname() + "(" + ref.sqlname() + ")");
-    // }
-    // catch (IllegalArgumentException e)
-    // {
-    // e.printStackTrace();
-    // System.out.println("Problem with " + f.getName());
-    // System.exit(0);
-    // }
-    // catch (IllegalAccessException e)
-    // {
-    // e.printStackTrace();
-    // System.out.println("Problem with " + f.getName());
-    // System.exit(0);
-    // }
-    // return "";
-    // }
-
-    /** 
-     * Generates a string which represents the declaration section of the 'create table' SQLite command.
-     * i.e. rows like: 'column name + column type + other declarations'
-     * Eg. 'create table table_name (<b>f1 varchar(2) primary key, f2 integer, ... <b>, foreign key ...)'
-     * 
-     * @author Péter Polcz <ppolcz@gmail.com>
-     */
-    // private static String sqlcolsdecl_rossz(String prefix)
-    // {
-    // String ret = "";
-    // Field[] cols = EColumnNames.class.getDeclaredFields();
-    // for (Field c : cols)
-    // if (c.getName().startsWith(prefix)) ret = ret + sqlcoldecl(c) + ",\n";
-    // for (Field c : cols)
-    // if (c.getName().startsWith(prefix))
-    // {
-    // String fk = sqlforkey(c);
-    // if (fk != null) ret = ret + fk + ",\n";
-    // }
-    // return ret.substring(0, ret.length() - 2);
-    // }
-
     private static String sqlcolsdecl(String prefix)
     {
         String ret = "";
@@ -123,29 +47,15 @@ public class DataStore
         return ret.substring(0, ret.length() - 2);
     }
 
+    /**
+     * @author Polcz Péter <ppolcz@gmail.com>
+     * @param table
+     * @return
+     */
     private static String sqlcreatetable(ETableNames table)
     {
         return "CREATE TABLE " + table.sqlname() + " ( \n" + sqlcolsdecl(table.prefix()) + " );";
     }
-
-    // private static String sqlcreatetable(Field f)
-    // {
-    // try
-    // {
-    // ETableNames table = (ETableNames) f.get(ETableNames.NONE);
-    // if (table.isNone()) return null;
-    // return "CREATE TABLE " + table.sqlname() + " ( \n" + sqlcolsdecl(table.prefix()) + " );";
-    // }
-    // catch (IllegalArgumentException e)
-    // {
-    // e.printStackTrace();
-    // }
-    // catch (IllegalAccessException e)
-    // {
-    // e.printStackTrace();
-    // }
-    // return null;
-    // }
 
     /** 
      * This is the interface that {@link ISQLiteHelper} (i.e. {@link SQLiteDriverJDBC}) can access.
@@ -164,14 +74,6 @@ public class DataStore
                 if (!t.isNone()) l.add(sqlcreatetable(t));
             }
 
-            // for (Field f : ETableNames.class.getDeclaredFields())
-            // {
-            // if (f.isEnumConstant())
-            // {
-            // String s = sqlcreatetable(f);
-            // if (s != null) l.add(s);
-            // }
-            // }
             return l;
         }
 
