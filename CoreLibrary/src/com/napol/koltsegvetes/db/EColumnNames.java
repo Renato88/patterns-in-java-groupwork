@@ -19,7 +19,7 @@ public enum EColumnNames
 
     TR_ID("integer primary key autoincrement not null unique"), // tranzakcio ID (autoincrement)
     TR_DATE("varchar(50)"), // datum
-    TR_CAID(CA_ID.sqltype()), // folyoszamla ID
+    TR_CAID(CA_ID), // folyoszamla ID
     TR_AMOUNT("integer"), // osszeg
     TR_NEWBALANCE("integer"), // uj egyenleg
     TR_CLUSTER("varchar(30)"), // a tranzakcio 'klasztere': mobilfeltoltes, napi szuksegletek, luxus stb...
@@ -32,16 +32,30 @@ public enum EColumnNames
     private static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("yy-MM-dd");
     private final String sqltype;
     private final Class<?> javatype;
+    private final ETableNames table;
+    private final EColumnNames ref;
+        
+    private EColumnNames(EColumnNames col)
+    {
+        this.sqltype = col.sqltype();
+        this.javatype = col.javatype;
+        this.table = ETableNames.getTable(this);
+        this.ref = col;
+    }
     
     private EColumnNames(Class<?> javatype)
     {
         this.sqltype = "NO_TYPE_SPECIFIED";
         this.javatype = javatype;
+        this.table = ETableNames.NONE;
+        this.ref = null;
     }
     
     private EColumnNames(String sqltype)
     {
         this.sqltype = sqltype;
+        this.table = ETableNames.getTable(this);
+        this.ref = null;
 
         if (isDateType())
             javatype = Date.class;
@@ -76,6 +90,16 @@ public enum EColumnNames
     public Class<?> javatype()
     {
         return javatype;
+    }
+    
+    public ETableNames table()
+    {
+        return this.table;
+    }
+    
+    public EColumnNames ref()
+    {
+        return this.ref;
     }
     
     public boolean isDateType()

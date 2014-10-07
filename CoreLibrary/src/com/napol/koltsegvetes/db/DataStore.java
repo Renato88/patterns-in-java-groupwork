@@ -1,8 +1,12 @@
 package com.napol.koltsegvetes.db;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 import com.napol.koltsegvetes.dbinterface.ISQLCommands;
@@ -36,7 +40,37 @@ public class DataStore
     {
         try
         {
-            return ((EColumnNames) (f.get(EColumnNames.INSTANCE))).sqlname() + " " + ((EColumnNames) (f.get(EColumnNames.INSTANCE))).sqltypeall();
+            EColumnNames self = (EColumnNames) (f.get(EColumnNames.INSTANCE));
+            return self.sqlname() + " " + self.sqltypeall();
+        }
+        catch (IllegalArgumentException e)
+        {
+            e.printStackTrace();
+            System.out.println("Problem with " + f.getName());
+            System.exit(0);
+        }
+        catch (IllegalAccessException e)
+        {
+            e.printStackTrace();
+            System.out.println("Problem with " + f.getName());
+            System.exit(0);
+        }
+        return "";
+    }
+
+    /**
+     * Detecting foreign keys from the {@link EColumnNames} declarations.
+     * 
+     * @author Péter Polcz <ppolcz@gmail.com>
+     */
+    private static String sqlforkey(Field f)
+    {
+        try
+        {
+            EColumnNames self = (EColumnNames) (f.get(EColumnNames.INSTANCE));
+            EColumnNames ref = ((EColumnNames) (f.get(EColumnNames.INSTANCE))).ref();
+            return ref == null ? null
+                : ("foreign key (" + self.sqlname() + ") references " + ref.table().sqlname() + "(" + ref.sqlname() + ")");
         }
         catch (IllegalArgumentException e)
         {
@@ -66,6 +100,12 @@ public class DataStore
         Field[] cols = EColumnNames.class.getDeclaredFields();
         for (Field c : cols)
             if (c.getName().startsWith(prefix)) ret = ret + sqlcoldecl(c) + ",\n";
+        for (Field c : cols)
+            if (c.getName().startsWith(prefix))
+            {
+                String fk = sqlforkey(c);
+                if (fk != null) ret = ret + fk + ",\n";
+            }
         return ret.substring(0, ret.length() - 2);
     }
 
@@ -82,9 +122,7 @@ public class DataStore
             return new String[]
             {
                 "CREATE TABLE " + ETableNames.CHARGE_ACCOUNTS.sqlname() + " ( \n" + sqlcolsdecl("CA_") + " );",
-                "CREATE TABLE " + ETableNames.TRANZACTIONS.sqlname() + " ( \n" + sqlcolsdecl("TR_") + ",\n"
-                    + "foreign key (" + EColumnNames.TR_CAID.sqlname() + ") "
-                    + "references " + ETableNames.CHARGE_ACCOUNTS.sqlname() + "(" + EColumnNames.CA_ID.sqlname() + ") );"
+                "CREATE TABLE " + ETableNames.TRANZACTIONS.sqlname() + " ( \n" + sqlcolsdecl("TR_") + " );"
             };
         }
 
@@ -107,6 +145,7 @@ public class DataStore
      * @param obj
      * @return
      */
+    @Deprecated
     public boolean insert(ETableNames table, Object[] obj)
     {
         switch (table)
@@ -126,8 +165,19 @@ public class DataStore
         return true;
     }
 
-    public int insert(ETableNames table, EColumnNames[] c, Object[] v)
+    /**
+     * Insert into table
+     * 
+     * @param table
+     * @param c
+     * @param v
+     * @return
+     * 
+     * @author Polcz Péter <ppolcz@gmail.com>
+     */
+    public int insert(EColumnNames[] c, Object[] v)
     {
+        ETableNames table = c[0].table();
         if (c.length != v.length) throw new IndexOutOfBoundsException("cols.length != vals.length");
 
         String sql = "insert into " + table.sqlname();
@@ -154,6 +204,7 @@ public class DataStore
         return 0;
     }
 
+    @Deprecated
     public int insert(ETableNames table, Map<EColumnNames, Object> values)
     {
         EColumnNames[] cols = new EColumnNames[values.size()];
@@ -167,75 +218,56 @@ public class DataStore
             ++i;
         }
 
-        return insert(table, cols, vals);
-        // return insert(table, (EColumnNames[]) values.keySet().toArray(), values.values().toArray());
+        return insert(cols, vals);
+    }
 
-        // String sql = "insert into " + table.sqlname();
-        // String cols = "";
-        // String vals = "";
-        // for (Map.Entry<EColumnNames, Object> entry : values.entrySet())
-        // {
-        // EColumnNames key = entry.getKey();
-        // cols += ", " + key.sqlname();
-        // vals += ", " + key.toString(entry.getValue());
-        // }
-        // sql = sql + " (" + cols.substring(2) + ") values (" + vals.substring(2) + ")";
-        //
-        // // insert into table
-        // helper.execSQL(sql);
-        //
-        // if (ETableNames.TRANZACTIONS == table)
-        // {
-        // EColumnNames id = EColumnNames.TR_ID;
-        // sql = String.format("select %s from %s order by %s desc limit 1", id.sqlname(), table.sqlname(), id.sqlname());
-        // AbstractQuery query = helper.execSQL(sql, id);
-        // return (Integer) query.getFirst()[0];
-        // }
-        //
-        // return 0;
+    /**
+     * @author Polcz Péter <ppolcz@gmail.com>
+     * Generates a SELECT SQL command from the given columns using their natural joint product.
+     * @return 
+     */
+    @SafeVarargs
+    public final AbstractQuery select(EColumnNames... cols)
+    {
+        String sqlwhere = "";
+        String sqlcols = "";
+        String sqltables = "";
+        String sql = "SELECT %s FROM %s";
+
+        Set<ETableNames> tables = new HashSet<ETableNames>();
+
+        for (EColumnNames c : cols)
+        {
+            tables.add(c.table());
+        }
+
+        // detecting references - generating when statement
+        if (tables.size() > 1)
+        {
+            for (EColumnNames c : cols)
+            {
+                // if the current column do not references nothing
+                if (c.ref() == null) continue;
+
+                // if the table of current column's reference do no appear in the query
+                if (!tables.contains(c.ref().table())) continue;
+
+                sqlwhere += " and " + c.sqlname() + " = " + c.ref().sqlname();
+            }
+        }
+        if (!sqlwhere.isEmpty()) sqlwhere = " WHERE " + sqlwhere.substring(5);
+
+        // generate tables list
+        for (ETableNames t : tables)
+            sqltables += ", " + t.sqlname();
+
+        // generate columns list
+        for (EColumnNames c : cols)
+            sqlcols += ", " + c.sqlname();
+
+        sql = String.format(sql, sqlcols.substring(2), sqltables.substring(2) + sqlwhere);
+        System.out.println(sql);
+        
+        return helper.execSQL(sql, cols);
     }
 }
-
-// IGY KEZDTEM, DE SZERINTEM EZ IGY ELEG GAGYI
-// public static final String TR_DATE = "date";
-// public static final String TR_AMOUNT = "amount";
-// public static final String TR_COMMENT = "comment";
-// public static final String TR_ACCOUNT = "account";
-// public static final String TR_GROUP = "group";
-
-// private static String sqlname(Field f) throws IllegalArgumentException,
-// IllegalAccessException
-// {
-// return ((EColumnNames) (f.get(EColumnNames.INSTANCE))).sqlname();
-// }
-//
-// private static String sqltype(Field f) throws IllegalArgumentException,
-// IllegalAccessException
-// {
-// return ((EColumnNames) (f.get(EColumnNames.INSTANCE))).sqltype();
-// }
-
-// interface Record
-// {
-//
-// }
-//
-// class TranzactionRecord implements Record
-// {
-// long id;
-// String name;
-//
-// public String toSqlInsert()
-// {
-// return "insert table ( )";
-// }
-// }
-//
-// class Folyoszamlak implements Record
-// {
-//
-// public String toSqlInsert()
-// {
-//
-// }
-// }

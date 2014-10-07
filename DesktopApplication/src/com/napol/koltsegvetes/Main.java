@@ -21,6 +21,12 @@ public class Main
     public static void main(String[] args)
     {
 
+        // testing if EColumnNames works good
+        System.out.println(EColumnNames.TR_CAID.ref().name());
+        System.out.println(EColumnNames.TR_AMOUNT.table().name());
+        System.out.println(EColumnNames.QR_PRETTY_DATE.table().name());
+        System.out.println(EColumnNames.CA_BALANCE.table().name());
+        
         // System.out.println(DataStore.ISQL_COMMANDS.sqlCreateTableCA());
         // System.out.println(DataStore.ISQL_COMMANDS.sqlCreateTableTR());
 
@@ -28,6 +34,7 @@ public class Main
         driver.onCreate();
 
         DataStore db = new DataStore(driver);
+        db.select(EColumnNames.TR_AMOUNT, EColumnNames.TR_CAID, EColumnNames.CA_BALANCE, EColumnNames.CA_NAME);
 
         Map<EColumnNames, Object> row = new HashMap<>();
         row.put(EColumnNames.TR_AMOUNT, 40000);

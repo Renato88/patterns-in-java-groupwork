@@ -1,5 +1,7 @@
 package com.napol.koltsegvetes;
 
+import static com.napol.koltsegvetes.util.Util.debug;
+
 import java.lang.reflect.Field;
 import java.util.ListIterator;
 
@@ -18,7 +20,6 @@ import android.widget.TextView;
 
 import com.napol.koltsegvetes.db.DataStore;
 import com.napol.koltsegvetes.db.EColumnNames;
-import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.dbdriver.MySQLiteHelper;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
@@ -134,7 +135,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     DataStore db;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -142,36 +143,23 @@ public class MainActivity extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         context = getApplicationContext();
+        db = new DataStore(MySQLiteHelper.instance().setSqlInterface(DataStore.ISQL_COMMANDS));
+        insertDummyDate();
+
+        AbstractQuery q = db.select(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
 
         // MyListAdapter<String> listAdapter = new
         // MyListAdapter<String>(context, R.layout.mainlw_item);
         // MyListAdapter<String> listAdapter = new
         // MyListAdapter<String>(context, android.R.layout.simple_list_item_1);
-        AbstractQuery query = new AbstractQuery();
-        query.setTypes(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
-        query.addRecord(1200, "Kajat vettem ennyiert");
-        query.addRecord(3200, "Lidl-ben vasaroltam");
-        query.addRecord(850, "Dezso ba menu");
-        query.addRecord(40000, "Kivettem a bankbol");
 
-        TransactionListAdapter listAdapter = new TransactionListAdapter(this, query, R.layout.mainlw_item);
+        TransactionListAdapter listAdapter = new TransactionListAdapter(this, q, R.layout.mainlw_item);
         // MyListAdapter<String> listAdapter = new
         // MyListAdapter<String>(context, R.layout.simple_tw);
         // listAdapter.add("Proba");
 
         lw = (ListView) findViewById(R.id.mainlw);
         lw.setAdapter(listAdapter);
-
-        MySQLiteHelper dbhelper = MySQLiteHelper.instance().setSqlInterface(DataStore.ISQL_COMMANDS);
-        dbhelper.onCreate();
-        
-        db = new DataStore(dbhelper);
-
-        ListIterator<Object[]> it = query.listIterator();
-        while (it.hasNext())
-        {
-            db.insert(ETableNames.TRANZACTIONS, query.getTypes(), it.next());
-        }
     }
 
     @Override
@@ -196,5 +184,23 @@ public class MainActivity extends ActionBarActivity
     public static Context getContext()
     {
         return context;
+    }
+
+    @SuppressWarnings("unused")
+    private void insertDummyDate()
+    {
+        debug("Inserting some dummy data into the sqlite datebase");
+        AbstractQuery query = new AbstractQuery();
+        query.setTypes(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
+        query.addRecord(1200, "Kajat vettem ennyiert");
+        query.addRecord(3200, "Lidl-ben vasaroltam");
+        query.addRecord(850, "Dezso ba menu");
+        query.addRecord(40000, "Kivettem a bankbol");
+
+        ListIterator<Object[]> it = query.listIterator();
+        while (it.hasNext())
+        {
+            db.insert(query.getTypes(), it.next());
+        }
     }
 }
