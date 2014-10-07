@@ -1,5 +1,7 @@
 package com.napol.koltsegvetes.dbinterface;
 
+import java.util.List;
+
 /** 
  * @author Péter Polcz <ppolcz@gmail.com>
  * 
@@ -10,5 +12,5 @@ public interface ISQLCommands
     public String getFilename();
     public int getVersion();
     
-    public String[] sqlCreateTableCommands();
+    public List<String> sqlCreateTableCommands();
 }

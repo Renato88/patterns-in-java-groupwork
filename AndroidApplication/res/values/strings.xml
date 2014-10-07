@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">AndroidApplication</string>
+    <string name="app_name">Polcz Koltsegvetes</string>
+    <string name="trformac_name">Polcz New Tranzaction</string>
+    <string name="mainac_name">Polcz Koltsegvetes</string>
     <string name="hello_world">Hello world!</string>
+    <string name="str_trform_remark">remark, comment</string>
+    
+    <!-- Menu items  -->
     <string name="action_settings">Settings</string>
+    <string name="action_newtr">New Tranzaction</string>
+    <string name="str_trform_amount">Amount</string>
 
 </resources>

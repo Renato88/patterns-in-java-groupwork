@@ -9,6 +9,12 @@ public class AbstractQuery extends LinkedList<Object[]>
     private static final long serialVersionUID = 896112267010842564L;
 
     protected EColumnNames[] types;
+
+    @SafeVarargs
+    public AbstractQuery(EColumnNames... types)
+    {
+        this.types = types;
+    }
     
     public EColumnNames[] getTypes ()
     {

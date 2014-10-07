@@ -1,7 +1,7 @@
 package com.napol.koltsegvetes.db;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,29 +63,29 @@ public class DataStore
      * 
      * @author Péter Polcz <ppolcz@gmail.com>
      */
-    private static String sqlforkey(Field f)
-    {
-        try
-        {
-            EColumnNames self = (EColumnNames) (f.get(EColumnNames.INSTANCE));
-            EColumnNames ref = ((EColumnNames) (f.get(EColumnNames.INSTANCE))).ref();
-            return ref == null ? null
-                : ("foreign key (" + self.sqlname() + ") references " + ref.table().sqlname() + "(" + ref.sqlname() + ")");
-        }
-        catch (IllegalArgumentException e)
-        {
-            e.printStackTrace();
-            System.out.println("Problem with " + f.getName());
-            System.exit(0);
-        }
-        catch (IllegalAccessException e)
-        {
-            e.printStackTrace();
-            System.out.println("Problem with " + f.getName());
-            System.exit(0);
-        }
-        return "";
-    }
+    // private static String sqlforkey(Field f)
+    // {
+    // try
+    // {
+    // EColumnNames self = (EColumnNames) (f.get(EColumnNames.INSTANCE));
+    // EColumnNames ref = ((EColumnNames) (f.get(EColumnNames.INSTANCE))).ref();
+    // return ref == null ? null
+    // : ("foreign key (" + self.sqlname() + ") references " + ref.table().sqlname() + "(" + ref.sqlname() + ")");
+    // }
+    // catch (IllegalArgumentException e)
+    // {
+    // e.printStackTrace();
+    // System.out.println("Problem with " + f.getName());
+    // System.exit(0);
+    // }
+    // catch (IllegalAccessException e)
+    // {
+    // e.printStackTrace();
+    // System.out.println("Problem with " + f.getName());
+    // System.exit(0);
+    // }
+    // return "";
+    // }
 
     /** 
      * Generates a string which represents the declaration section of the 'create table' SQLite command.
@@ -94,20 +94,58 @@ public class DataStore
      * 
      * @author Péter Polcz <ppolcz@gmail.com>
      */
+    // private static String sqlcolsdecl_rossz(String prefix)
+    // {
+    // String ret = "";
+    // Field[] cols = EColumnNames.class.getDeclaredFields();
+    // for (Field c : cols)
+    // if (c.getName().startsWith(prefix)) ret = ret + sqlcoldecl(c) + ",\n";
+    // for (Field c : cols)
+    // if (c.getName().startsWith(prefix))
+    // {
+    // String fk = sqlforkey(c);
+    // if (fk != null) ret = ret + fk + ",\n";
+    // }
+    // return ret.substring(0, ret.length() - 2);
+    // }
+
     private static String sqlcolsdecl(String prefix)
     {
         String ret = "";
-        Field[] cols = EColumnNames.class.getDeclaredFields();
-        for (Field c : cols)
-            if (c.getName().startsWith(prefix)) ret = ret + sqlcoldecl(c) + ",\n";
-        for (Field c : cols)
-            if (c.getName().startsWith(prefix))
+        EColumnNames[] cols = EColumnNames.values();
+        for (EColumnNames c : cols)
+            if (c.name().startsWith(prefix)) ret += c.sqlname() + " " + c.sqltypeall() + ",\n";
+        for (EColumnNames c : cols)
+            if (c.name().startsWith(prefix) && c.ref() != null)
             {
-                String fk = sqlforkey(c);
-                if (fk != null) ret = ret + fk + ",\n";
+                ret += "foreign key (" + c.sqlname() + ") references " + c.ref().table().sqlname() + "(" + c.ref().sqlname() + ")" + ",\n";
             }
         return ret.substring(0, ret.length() - 2);
     }
+
+    private static String sqlcreatetable(ETableNames table)
+    {
+        return "CREATE TABLE " + table.sqlname() + " ( \n" + sqlcolsdecl(table.prefix()) + " );";
+    }
+
+    // private static String sqlcreatetable(Field f)
+    // {
+    // try
+    // {
+    // ETableNames table = (ETableNames) f.get(ETableNames.NONE);
+    // if (table.isNone()) return null;
+    // return "CREATE TABLE " + table.sqlname() + " ( \n" + sqlcolsdecl(table.prefix()) + " );";
+    // }
+    // catch (IllegalArgumentException e)
+    // {
+    // e.printStackTrace();
+    // }
+    // catch (IllegalAccessException e)
+    // {
+    // e.printStackTrace();
+    // }
+    // return null;
+    // }
 
     /** 
      * This is the interface that {@link ISQLiteHelper} (i.e. {@link SQLiteDriverJDBC}) can access.
@@ -117,13 +155,24 @@ public class DataStore
     public static ISQLCommands ISQL_COMMANDS = new ISQLCommands()
     {
         @Override
-        public String[] sqlCreateTableCommands()
+        public List<String> sqlCreateTableCommands()
         {
-            return new String[]
+            ArrayList<String> l = new ArrayList<String>();
+
+            for (ETableNames t : ETableNames.values())
             {
-                "CREATE TABLE " + ETableNames.CHARGE_ACCOUNTS.sqlname() + " ( \n" + sqlcolsdecl("CA_") + " );",
-                "CREATE TABLE " + ETableNames.TRANZACTIONS.sqlname() + " ( \n" + sqlcolsdecl("TR_") + " );"
-            };
+                if (!t.isNone()) l.add(sqlcreatetable(t));
+            }
+
+            // for (Field f : ETableNames.class.getDeclaredFields())
+            // {
+            // if (f.isEnumConstant())
+            // {
+            // String s = sqlcreatetable(f);
+            // if (s != null) l.add(s);
+            // }
+            // }
+            return l;
         }
 
         @Override
@@ -186,7 +235,7 @@ public class DataStore
         for (int i = 0; i < c.length; ++i)
         {
             cols += ", " + c[i].sqlname();
-            vals += ", " + c[i].toString(v[i]);
+            vals += ", " + c[i].toQuoteString(v[i]);
         }
         sql = sql + " (" + cols.substring(2) + ") values (" + vals.substring(2) + ")";
 
@@ -204,8 +253,7 @@ public class DataStore
         return 0;
     }
 
-    @Deprecated
-    public int insert(ETableNames table, Map<EColumnNames, Object> values)
+    public int insert(Map<EColumnNames, Object> values)
     {
         EColumnNames[] cols = new EColumnNames[values.size()];
         Object[] vals = new Object[values.size()];
@@ -267,7 +315,7 @@ public class DataStore
 
         sql = String.format(sql, sqlcols.substring(2), sqltables.substring(2) + sqlwhere);
         System.out.println(sql);
-        
+
         return helper.execSQL(sql, cols);
     }
 }

@@ -12,6 +12,7 @@ public enum ETableNames
 {
     CHARGE_ACCOUNTS("CA_"), // folyoszamlak
     TRANZACTIONS("TR_"), // tranzakciok
+    CLUSTERS("CL_"), // tranzakcio tipusok
     NONE(".");
 
     private final String pref;
@@ -44,13 +45,6 @@ public enum ETableNames
             {
                 if (f.isEnumConstant() && col.name().startsWith(((ETableNames) (f.get(NONE))).pref)) 
                 {
-                    // System.out.println(String.format("column name: %s  field name: %s, pref: %s, isEnumCons: %b"
-                    // + "  startswith: %b",
-                    // col.name(), ((ETableNames) (f.get(NONE))).name(),
-                    // ((ETableNames) (f.get(NONE))).pref,
-                    // f.isEnumConstant(),
-                    // col.name().startsWith(((ETableNames) (f.get(NONE))).pref)));
-                    // System.out.println(String.format("The chosen is: %s", (ETableNames) (f.get(ETableNames.NONE))));
                     return (ETableNames) (f.get(ETableNames.NONE));
                 }
             }
@@ -68,5 +62,10 @@ public enum ETableNames
             e.printStackTrace();
         }
         return NONE;
+    }
+    
+    public boolean isNone()
+    {
+        return pref.startsWith(".");
     }
 }

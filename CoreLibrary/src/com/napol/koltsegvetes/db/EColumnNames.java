@@ -25,8 +25,11 @@ public enum EColumnNames
     TR_CLUSTER("varchar(30)"), // a tranzakcio 'klasztere': mobilfeltoltes, napi szuksegletek, luxus stb...
     TR_REMARK("varchar(300)"), // megjegyzes, komment
 
+    CL_NAME("varchar(20) primary key not null unique"), //
+    CL_DIRECTION("integer"), // milyen iranyba folyik a penz: ha negativ kimenet, ha pozitiv bemenet
+
     QR_PRETTY_DATE(String.class),
-    
+
     INSTANCE(Object.class);
 
     private static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("yy-MM-dd");
@@ -34,7 +37,7 @@ public enum EColumnNames
     private final Class<?> javatype;
     private final ETableNames table;
     private final EColumnNames ref;
-        
+
     private EColumnNames(EColumnNames col)
     {
         this.sqltype = col.sqltype();
@@ -42,7 +45,7 @@ public enum EColumnNames
         this.table = ETableNames.getTable(this);
         this.ref = col;
     }
-    
+
     private EColumnNames(Class<?> javatype)
     {
         this.sqltype = "NO_TYPE_SPECIFIED";
@@ -50,23 +53,19 @@ public enum EColumnNames
         this.table = ETableNames.NONE;
         this.ref = null;
     }
-    
+
     private EColumnNames(String sqltype)
     {
         this.sqltype = sqltype;
         this.table = ETableNames.getTable(this);
         this.ref = null;
 
-        if (isDateType())
-            javatype = Date.class;
-        else if (sqltype.startsWith("varchar"))
-            javatype = String.class;
-        else if (sqltype.startsWith("integer"))
-            javatype = Integer.class;
-        else
-            javatype = Object.class;
+        if (isDateType()) javatype = Date.class;
+        else if (sqltype.startsWith("varchar")) javatype = String.class;
+        else if (sqltype.startsWith("integer")) javatype = Integer.class;
+        else javatype = Object.class;
     }
-    
+
     public String sqlname()
     {
         return name().toLowerCase(Locale.getDefault());
@@ -76,42 +75,42 @@ public enum EColumnNames
     {
         return sqltype;
     }
-    
+
     public String sqltype()
     {
         return sqltype.split(" ")[0];
     }
-    
+
     public String sqlname(String prefix)
     {
         return prefix + "." + name().toLowerCase(Locale.getDefault());
     }
-    
+
     public Class<?> javatype()
     {
         return javatype;
     }
-    
+
     public ETableNames table()
     {
         return this.table;
     }
-    
+
     public EColumnNames ref()
     {
         return this.ref;
     }
-    
+
     public boolean isDateType()
     {
         return name().contains("DATE") && sqltype.startsWith("varchar");
     }
-    
-    public String toQuote(String str)
+
+    private String toQuote(String str)
     {
         return "'" + str + "'";
     }
-    
+
     public Object toDate(String data)
     {
         try
@@ -125,30 +124,30 @@ public enum EColumnNames
         }
         return data;
     }
-    
+
     public String toString(Object data)
     {
-        String ret = "";
-        
-        if (javatype == Integer.class)
-        {
-            ret = data.toString();
-            return ret;
-        }
+        if (javatype == Integer.class) { return data.toString(); }
 
         if (javatype == Date.class)
         {
-            if (data instanceof String) data = toDate((String) data);
-            if (data instanceof Date) ret = defaultDateFormat.format((Date) data);
+            Object tmp = data;
+            if (data instanceof String) tmp = toDate((String) tmp);
+            if (data instanceof Date) return defaultDateFormat.format((Date) tmp);
         }
+
+        else if (javatype == String.class) return (String) data;
+
+        return null;
+    }
+
+    public String toQuoteString(Object data)
+    {
+        String str = toString(data);
+        if (str == null) return null;
         
-        else if (javatype == String.class)
-        {
-            ret = (String) data;
-        }
-        
-        ret = toQuote(ret);
-                
-        return ret;
+        if (javatype == Integer.class) return str;
+
+        return toQuote(str);
     }
 }

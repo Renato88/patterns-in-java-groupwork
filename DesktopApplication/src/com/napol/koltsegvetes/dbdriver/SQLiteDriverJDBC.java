@@ -2,6 +2,7 @@ package com.napol.koltsegvetes.dbdriver;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -51,7 +52,8 @@ public class SQLiteDriverJDBC implements ISQLiteHelper
             }
             catch (SQLException e)
             {
-                System.out.println("<> Table already existists!");
+                System.out.println("pcz> Catched exception: ");
+                e.printStackTrace();
             }
         }
     }
@@ -96,22 +98,42 @@ public class SQLiteDriverJDBC implements ISQLiteHelper
         try
         {
             Statement s = c.createStatement();
-            System.out.println(sqlcommand);
-            s.executeUpdate(sqlcommand);
+            ResultSet r = s.executeQuery(sqlcommand);
+            AbstractQuery q = new AbstractQuery(cols);
+            System.out.println("cols.length = " + cols.length);
+            while (r.next())
+            {
+                Object[] record = new Object[cols.length];
+                System.out.println("record.length = " + record.length);
+                for (int i = 0; i < cols.length; ++i)
+                    record[i] = r.getObject(cols[i].sqlname());
+                q.addRecord(record);
+            }
             s.close();
-            System.out.println("pcz> row inserted");
+            
+            return q;
         }
         catch (SQLException e)
         {
             System.out.println("pcz> error ocured while inserting this row: \npcz>   " + sqlcommand);
         }
-        return new AbstractQuery().setTypes(cols).addRecord(0);
+        return null;
     }
 
     @Override
     public void execSQL(String sqlcommand)
     {
-        // TODO Auto-generated method stub
+        try
+        {
+            Statement s = c.createStatement();
+            s.executeUpdate(sqlcommand);
+            s.close();
+        }
+        catch (SQLException e)
+        {
+            System.out.println("pcz> error ocured while inserting this row: \npcz>   " + sqlcommand);
+            e.printStackTrace();
+        }
     }
 
 }
