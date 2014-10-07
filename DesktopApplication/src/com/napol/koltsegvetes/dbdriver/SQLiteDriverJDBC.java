@@ -91,10 +91,27 @@ public class SQLiteDriverJDBC implements ISQLiteHelper
     }
 
     @Override
-    public AbstractQuery execQuery(String sqlcommand, EColumnNames cols[])
+    public AbstractQuery execSQL(String sqlcommand, EColumnNames... cols)
     {
-        
-        return null;
+        try
+        {
+            Statement s = c.createStatement();
+            System.out.println(sqlcommand);
+            s.executeUpdate(sqlcommand);
+            s.close();
+            System.out.println("pcz> row inserted");
+        }
+        catch (SQLException e)
+        {
+            System.out.println("pcz> error ocured while inserting this row: \npcz>   " + sqlcommand);
+        }
+        return new AbstractQuery().setTypes(cols).addRecord(0);
+    }
+
+    @Override
+    public void execSQL(String sqlcommand)
+    {
+        // TODO Auto-generated method stub
     }
 
 }

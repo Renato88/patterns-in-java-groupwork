@@ -15,9 +15,10 @@ public class AbstractQuery extends LinkedList<Object[]>
         return types;
     }
     
-    public void setTypes (EColumnNames[] types)
+    public AbstractQuery setTypes (EColumnNames... types)
     {
         this.types = types;
+        return this;
     }
     
     public int getRecordLength()
@@ -25,10 +26,11 @@ public class AbstractQuery extends LinkedList<Object[]>
         return types.length;
     }
     
-    public void setRecordLength(int n)
-    {
-        types = new EColumnNames[n];
-    }
+    // public AbstractQuery setRecordLength(int n)
+    // {
+    // types = new EColumnNames[n];
+    // return this;
+    // }
     
     public void checkRecord(Object[] record)
     {
@@ -36,9 +38,10 @@ public class AbstractQuery extends LinkedList<Object[]>
             "record length smaller that expected, or not initialized");
     }
     
-    public void addRecord(Object... objs)
+    public AbstractQuery addRecord(Object... objs)
     {
         addLast(objs);
+        return this;
     }
     
     @Override

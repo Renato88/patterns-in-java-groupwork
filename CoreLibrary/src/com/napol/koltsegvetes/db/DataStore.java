@@ -1,7 +1,10 @@
 package com.napol.koltsegvetes.db;
 
 import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 import com.napol.koltsegvetes.dbinterface.ISQLCommands;
 import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
 
@@ -19,6 +22,7 @@ public class DataStore
     public DataStore(ISQLiteHelper helper)
     {
         this.helper = helper;
+        this.helper.onCreate();
     }
 
     /** 
@@ -120,6 +124,75 @@ public class DataStore
             }
         }
         return true;
+    }
+
+    public int insert(ETableNames table, EColumnNames[] c, Object[] v)
+    {
+        if (c.length != v.length) throw new IndexOutOfBoundsException("cols.length != vals.length");
+
+        String sql = "insert into " + table.sqlname();
+        String cols = "";
+        String vals = "";
+        for (int i = 0; i < c.length; ++i)
+        {
+            cols += ", " + c[i].sqlname();
+            vals += ", " + c[i].toString(v[i]);
+        }
+        sql = sql + " (" + cols.substring(2) + ") values (" + vals.substring(2) + ")";
+
+        // insert into table
+        helper.execSQL(sql);
+
+        if (ETableNames.TRANZACTIONS == table)
+        {
+            EColumnNames id = EColumnNames.TR_ID;
+            sql = String.format("select %s from %s order by %s desc limit 1", id.sqlname(), table.sqlname(), id.sqlname());
+            AbstractQuery query = helper.execSQL(sql, id);
+            return (Integer) query.getFirst()[0];
+        }
+
+        return 0;
+    }
+
+    public int insert(ETableNames table, Map<EColumnNames, Object> values)
+    {
+        EColumnNames[] cols = new EColumnNames[values.size()];
+        Object[] vals = new Object[values.size()];
+
+        int i = 0;
+        for (Entry<EColumnNames, Object> entry : values.entrySet())
+        {
+            cols[i] = entry.getKey();
+            vals[i] = entry.getValue();
+            ++i;
+        }
+
+        return insert(table, cols, vals);
+        // return insert(table, (EColumnNames[]) values.keySet().toArray(), values.values().toArray());
+
+        // String sql = "insert into " + table.sqlname();
+        // String cols = "";
+        // String vals = "";
+        // for (Map.Entry<EColumnNames, Object> entry : values.entrySet())
+        // {
+        // EColumnNames key = entry.getKey();
+        // cols += ", " + key.sqlname();
+        // vals += ", " + key.toString(entry.getValue());
+        // }
+        // sql = sql + " (" + cols.substring(2) + ") values (" + vals.substring(2) + ")";
+        //
+        // // insert into table
+        // helper.execSQL(sql);
+        //
+        // if (ETableNames.TRANZACTIONS == table)
+        // {
+        // EColumnNames id = EColumnNames.TR_ID;
+        // sql = String.format("select %s from %s order by %s desc limit 1", id.sqlname(), table.sqlname(), id.sqlname());
+        // AbstractQuery query = helper.execSQL(sql, id);
+        // return (Integer) query.getFirst()[0];
+        // }
+        //
+        // return 0;
     }
 }
 

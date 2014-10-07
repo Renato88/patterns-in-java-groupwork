@@ -1,6 +1,7 @@
 package com.napol.koltsegvetes;
 
 import java.lang.reflect.Field;
+import java.util.ListIterator;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.napol.koltsegvetes.db.DataStore;
 import com.napol.koltsegvetes.db.EColumnNames;
+import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.dbdriver.MySQLiteHelper;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
@@ -96,14 +98,16 @@ public class MainActivity extends ActionBarActivity
                 String pattern = "pcz_listview_item_tw_";
                 int nrOfInitialized = 0;
 
-                // go through all static fields and check whether its name matches the given pattern
+                // go through all static fields and check whether its name
+                // matches the given pattern
                 for (Field field : R.id.class.getDeclaredFields())
                 {
                     if (field.getName().startsWith(pattern))
                     {
                         int i = Integer.parseInt(field.getName().replace(pattern, ""));
 
-                        // check if the field's (i.e. textview's id) number is less 
+                        // check if the field's (i.e. textview's id) number is
+                        // less
                         // than the number of columns in the query
                         if (i < n)
                         {
@@ -129,6 +133,8 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
+    DataStore db;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -137,42 +143,15 @@ public class MainActivity extends ActionBarActivity
 
         context = getApplicationContext();
 
-        // Field[] fields = R.id.class.getDeclaredFields();
-        // for (Field field : fields)
-        // {
-        // try
-        // {
-        // Log.d("<pcz> ids", field.getName() + " = " + field.get(null));
-        // }
-        // catch (IllegalAccessException e)
-        // {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // catch (IllegalArgumentException e)
-        // {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
-        // }
-        // }
-        //
-        // fields = R.layout.class.getDeclaredFields();
-        // for (Field field : fields)
-        // {
-        // Log.d("<pcz> layouts", field.getName());
-        // }
-
         // MyListAdapter<String> listAdapter = new
         // MyListAdapter<String>(context, R.layout.mainlw_item);
         // MyListAdapter<String> listAdapter = new
         // MyListAdapter<String>(context, android.R.layout.simple_list_item_1);
         AbstractQuery query = new AbstractQuery();
-        EColumnNames[] types =
-        { EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK };
-        query.setTypes(types);
+        query.setTypes(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
         query.addRecord(1200, "Kajat vettem ennyiert");
         query.addRecord(3200, "Lidl-ben vasaroltam");
-        query.addRecord(850, "Dezso ba' menu");
+        query.addRecord(850, "Dezso ba menu");
         query.addRecord(40000, "Kivettem a bankbol");
 
         TransactionListAdapter listAdapter = new TransactionListAdapter(this, query, R.layout.mainlw_item);
@@ -185,6 +164,14 @@ public class MainActivity extends ActionBarActivity
 
         MySQLiteHelper dbhelper = MySQLiteHelper.instance().setSqlInterface(DataStore.ISQL_COMMANDS);
         dbhelper.onCreate();
+        
+        db = new DataStore(dbhelper);
+
+        ListIterator<Object[]> it = query.listIterator();
+        while (it.hasNext())
+        {
+            db.insert(ETableNames.TRANZACTIONS, query.getTypes(), it.next());
+        }
     }
 
     @Override

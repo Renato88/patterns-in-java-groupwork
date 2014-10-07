@@ -1,6 +1,11 @@
 package com.napol.koltsegvetes;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.napol.koltsegvetes.db.DataStore;
+import com.napol.koltsegvetes.db.EColumnNames;
+import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.dbdriver.SQLiteDriverJDBC;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
@@ -21,11 +26,18 @@ public class Main
 
         ISQLiteHelper driver = SQLiteDriverJDBC.instance().setSqlInterface(DataStore.ISQL_COMMANDS);
         driver.onCreate();
-        
-        AbstractQuery table = new AbstractQuery();
-        table.setRecordLength(4);
-        table.addLast(new Object[4]);
-        
+
+        DataStore db = new DataStore(driver);
+
+        Map<EColumnNames, Object> row = new HashMap<>();
+        row.put(EColumnNames.TR_AMOUNT, 40000);
+        row.put(EColumnNames.TR_REMARK, "10 bax narancs nektar");
+
+        db.insert(ETableNames.TRANZACTIONS, row);
+
+        AbstractQuery table = new AbstractQuery().setTypes(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
+        table.addRecord(1231, "Kutyafule");
+
         System.out.println(table.isEmpty());
         System.out.println(table.getFirst()[0]);
     }

@@ -1,5 +1,7 @@
 package com.napol.koltsegvetes.db;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -27,6 +29,7 @@ public enum EColumnNames
     
     INSTANCE(Object.class);
 
+    private static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("yy-MM-dd");
     private final String sqltype;
     private final Class<?> javatype;
     
@@ -80,8 +83,48 @@ public enum EColumnNames
         return name().contains("DATE") && sqltype.startsWith("varchar");
     }
     
+    public String toQuote(String str)
+    {
+        return "'" + str + "'";
+    }
+    
+    public Object toDate(String data)
+    {
+        try
+        {
+            if (javatype != Date.class) throw new ParseException("", 0);
+            return defaultDateFormat.parse(data);
+        }
+        catch (ParseException e)
+        {
+            e.printStackTrace();
+        }
+        return data;
+    }
+    
     public String toString(Object data)
     {
-        return data.toString();
+        String ret = "";
+        
+        if (javatype == Integer.class)
+        {
+            ret = data.toString();
+            return ret;
+        }
+
+        if (javatype == Date.class)
+        {
+            if (data instanceof String) data = toDate((String) data);
+            if (data instanceof Date) ret = defaultDateFormat.format((Date) data);
+        }
+        
+        else if (javatype == String.class)
+        {
+            ret = (String) data;
+        }
+        
+        ret = toQuote(ret);
+                
+        return ret;
     }
 }
