@@ -3,6 +3,7 @@ package com.napol.koltsegvetes;
 import static com.napol.koltsegvetes.util.Util.debug;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.ListIterator;
 
 import android.content.Context;
@@ -18,16 +19,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.napol.koltsegvetes.db.DataStore;
 import com.napol.koltsegvetes.db.EColumnNames;
-import com.napol.koltsegvetes.dbdriver.MySQLiteHelper;
+import com.napol.koltsegvetes.dbdriver.DataStore;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
 public class MainActivity extends ActionBarActivity
 {
+    static final String KEY_ABSQR = "absqr";
     static final int REQUEST_NEWTR = 8888;
-    private static Context context = null;
     private ListView lw;
 
     class MyListAdapter<T> extends ArrayAdapter<T>
@@ -144,9 +145,10 @@ public class MainActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        context = getApplicationContext();
-        db = new DataStore(MySQLiteHelper.instance().setSqlInterface(DataStore.ISQL_COMMANDS));
-        insertDummyDate();
+        db = DataStore.instance();
+        db.setContext(this);
+        db.onCreate();
+        // insertDummyDate();
 
         AbstractQuery q = db.select(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
 
@@ -188,11 +190,26 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public static Context getContext()
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        return context;
-    }
+        if (resultCode == RESULT_OK)
+        {
+            ArrayList<Object[]> q;
+            switch (requestCode)
+            {
+                case REQUEST_NEWTR:
+                    q = (ArrayList<Object[]>) data.getExtras().getSerializable(KEY_ABSQR);
+                    Toast.makeText(this, String.format("%s", q.get(0)[0].toString()), Toast.LENGTH_LONG).show();
+//                    debug("q = %s %s %s %s", q.getTypes()[0], q.getTypes()[1], q.getFirst()[0].toString(), q.getFirst()[1].toString());
+                    break;
 
+                default:
+                    break;
+            }
+        }
+    }
+    
     @SuppressWarnings("unused")
     private void insertDummyDate()
     {

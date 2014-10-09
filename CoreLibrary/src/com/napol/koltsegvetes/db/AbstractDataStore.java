@@ -1,5 +1,6 @@
 package com.napol.koltsegvetes.db;
 
+import static com.napol.koltsegvetes.db.EColumnNames.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,24 +17,44 @@ import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
  * 
  * Created on September 21, 2014, 7:59 AM
  */
-public class DataStore
+public abstract class AbstractDataStore
 {
     private static final String DBNAME = "koltsegvetes.db";
 
-    ISQLiteHelper helper;
+    private ISQLiteHelper helper = null;
+    private boolean created = false;
 
-    public DataStore(ISQLiteHelper helper)
+    /**
+     * Should not be synchronized.
+     */
+    protected AbstractDataStore()
     {
-        this.helper = helper;
-        this.helper.onCreate();
+        helper = getHelperInstance();
+        helper.setSqlInterface(sqlInitHelper);
     }
+
+    public synchronized void onCreate()
+    {
+        if (!created)
+        {
+            helper.onCreate();
+            sqlInitHelper.initAfterCreate();
+            created = true;
+        }
+    }
+
+    /**
+     * Factory method of the helper
+     * @return {@link ISQLiteHelper} instance to initialize this.helper
+     */
+    protected abstract ISQLiteHelper getHelperInstance();
 
     /**
      * @author Polcz Péter <ppolcz@gmail.com>
      * @param prefix
      * @return
      */
-    private static String sqlcolsdecl(String prefix)
+    private String sqlcolsdecl(String prefix)
     {
         String ret = "";
         EColumnNames[] cols = EColumnNames.values();
@@ -52,17 +73,17 @@ public class DataStore
      * @param table
      * @return
      */
-    private static String sqlcreatetable(ETableNames table)
+    private String sqlcreatetable(ETableNames table)
     {
         return "CREATE TABLE " + table.sqlname() + " ( \n" + sqlcolsdecl(table.prefix()) + " );";
     }
 
     /** 
-     * This is the interface that {@link ISQLiteHelper} (i.e. {@link SQLiteDriverJDBC}) can access.
+     * This is the interface that {@link ISQLiteHelper} (i.e. {@link SQLiteDriverJDBC}) will be given as a callback.
      * 
      * @author Péter Polcz <ppolcz@gmail.com>
      */
-    public static ISQLCommands ISQL_COMMANDS = new ISQLCommands()
+    private final ISQLCommands sqlInitHelper = new ISQLCommands()
     {
         @Override
         public List<String> sqlCreateTableCommands()
@@ -88,7 +109,44 @@ public class DataStore
         {
             return 1;
         }
-    };
+
+        @Override
+        public boolean initAfterCreate()
+        {
+            if (helper == null) return false;
+
+            {
+                EColumnNames[] types = { CL_NAME, CL_DIRECTION };
+                Object[][] cls = {
+                    { "Elelem", -1 },
+                    { "Ruhazkodas", -1 },
+                    { "Alberlet", -1 },
+                    { "Osztondij", +1 },
+                    { "Fizetes", +1 },
+                    { "Egyeb kiadas", -1 },
+                    { "Egyeb bevetel", +1 },
+                    { "Athelyezes innen", -1 },
+                    { "Athelyezes ide", +1 }
+                };
+
+                for (Object[] cl : cls)
+                    insert(types, cl);
+            }
+
+            {
+                EColumnNames[] types = { CA_ID, CA_NAME };
+                Object[][] cls = {
+                    { "potp", "Peti OTP Bank" },
+                    { "pkez", "Peti kezpenz" }
+                };
+
+                for (Object[] cl : cls)
+                    insert(types, cl);
+            }
+
+            return true;
+        }
+    }; /* end of implementation of the ISQLCommands */
 
     /**
      * Balazs elvileg ezt megirta
@@ -97,7 +155,7 @@ public class DataStore
      * @return
      */
     @Deprecated
-    public boolean insert(ETableNames table, Object[] obj)
+    public synchronized boolean insert(ETableNames table, Object[] obj)
     {
         switch (table)
         {
@@ -126,7 +184,7 @@ public class DataStore
      * 
      * @author Polcz Péter <ppolcz@gmail.com>
      */
-    public int insert(EColumnNames[] c, Object[] v)
+    public synchronized int insert(EColumnNames[] c, Object[] v)
     {
         ETableNames table = c[0].table();
         if (c.length != v.length) throw new IndexOutOfBoundsException("cols.length != vals.length");
@@ -155,7 +213,7 @@ public class DataStore
         return 0;
     }
 
-    public int insert(Map<EColumnNames, Object> values)
+    public synchronized int insert(Map<EColumnNames, Object> values)
     {
         EColumnNames[] cols = new EColumnNames[values.size()];
         Object[] vals = new Object[values.size()];
@@ -177,7 +235,7 @@ public class DataStore
      * @return 
      */
     @SafeVarargs
-    public final AbstractQuery select(EColumnNames... cols)
+    public synchronized final AbstractQuery select(EColumnNames... cols)
     {
         String sqlwhere = "";
         String sqlcols = "";

@@ -9,8 +9,9 @@ import java.util.List;
  */
 public interface ISQLCommands
 {
-    public String getFilename();
-    public int getVersion();
+    String getFilename();
+    int getVersion();
     
-    public List<String> sqlCreateTableCommands();
+    List<String> sqlCreateTableCommands();
+    boolean initAfterCreate();
 }

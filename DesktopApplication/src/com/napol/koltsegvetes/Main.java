@@ -1,12 +1,24 @@
 package com.napol.koltsegvetes;
 
+import static com.napol.koltsegvetes.db.EColumnNames.CA_BALANCE;
+import static com.napol.koltsegvetes.db.EColumnNames.CA_ID;
+import static com.napol.koltsegvetes.db.EColumnNames.CA_NAME;
+import static com.napol.koltsegvetes.db.EColumnNames.CL_DIRECTION;
+import static com.napol.koltsegvetes.db.EColumnNames.CL_NAME;
+import static com.napol.koltsegvetes.db.EColumnNames.QR_PRETTY_DATE;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_AMOUNT;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_CAID;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_CLUSTER;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_REMARK;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import com.napol.koltsegvetes.db.DataStore;
+import com.napol.koltsegvetes.db.AbstractDataStore;
 import com.napol.koltsegvetes.db.EColumnNames;
 import com.napol.koltsegvetes.dbdriver.SQLiteDriverJDBC;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
+import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
 
 /**
  * @author Péter Polcz <ppolcz@gmail.com>
@@ -16,18 +28,27 @@ import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 public class Main
 {
 
-    public static void main(String[] args)
+    AbstractDataStore db = new AbstractDataStore()
     {
+        @Override
+        protected ISQLiteHelper getHelperInstance()
+        {
+            return SQLiteDriverJDBC.instance();
+        }
+    };
+
+    public Main()
+    {
+        db.onCreate();
 
         // testing if EColumnNames works good
-        System.out.println(EColumnNames.TR_CAID.ref().name());
-        System.out.println(EColumnNames.TR_AMOUNT.table().name());
-        System.out.println(EColumnNames.QR_PRETTY_DATE.table().name());
-        System.out.println(EColumnNames.CA_BALANCE.table().name());
+        System.out.println(TR_CAID.ref().name());
+        System.out.println(TR_AMOUNT.table().name());
+        System.out.println(QR_PRETTY_DATE.table().name());
+        System.out.println(CA_BALANCE.table().name());
 
-        DataStore db = new DataStore(SQLiteDriverJDBC.instance().setSqlInterface(DataStore.ISQL_COMMANDS));
-        AbstractQuery q = db.select(EColumnNames.TR_AMOUNT, EColumnNames.TR_CAID, EColumnNames.TR_CLUSTER,
-            EColumnNames.CA_BALANCE, EColumnNames.CA_NAME);
+        AbstractQuery q = db.select(TR_AMOUNT, TR_CAID, TR_CLUSTER,
+            CA_BALANCE, CA_NAME);
         for (Object[] r : q)
         {
             System.out.println("----------------------------");
@@ -42,32 +63,38 @@ public class Main
         Map<EColumnNames, Object> row = new HashMap<>();
         
         row.clear();
-        row.put(EColumnNames.TR_AMOUNT, 40000);
-        row.put(EColumnNames.TR_REMARK, "10 bax narancs nektar");
-        row.put(EColumnNames.TR_CAID, "potp");
+        row.put(TR_AMOUNT, 40000);
+        row.put(TR_REMARK, "10 bax narancs nektar");
+        row.put(TR_CAID, "potp");
         db.insert(row);
         
         row.clear();
-        row.put(EColumnNames.CA_ID, "potp");
-        row.put(EColumnNames.CA_NAME, "Peti Otp Bank Szamla");
+        row.put(CA_ID, "potp");
+        row.put(CA_NAME, "Peti Otp Bank Szamla");
         db.insert(row);
         
         row.clear();
-        row.put(EColumnNames.CL_NAME, "alberlet");
-        row.put(EColumnNames.CL_DIRECTION, -1);
+        row.put(CL_NAME, "alberlet");
+        row.put(CL_DIRECTION, -1);
         db.insert(row);
 
         row.clear();
-        row.put(EColumnNames.CL_NAME, "osztondij");
-        row.put(EColumnNames.CL_DIRECTION, 1);
+        row.put(CL_NAME, "osztondij");
+        row.put(CL_DIRECTION, 1);
         db.insert(row);
         
         // testing Abstract query
-        AbstractQuery table = new AbstractQuery(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
+        AbstractQuery table = new AbstractQuery(TR_AMOUNT, TR_REMARK);
         table.addRecord(1231, "Kutyafule");
 
         System.out.println(table.isEmpty());
         System.out.println(table.getFirst()[0]);
+    }
+    
+    public static void main(String[] args)
+    {
+        new Main();
+        System.out.println("SUCCES: The application returned successfully!");
     }
 
 }

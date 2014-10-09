@@ -29,6 +29,7 @@ public enum EColumnNames
     CL_DIRECTION("integer"), // milyen iranyba folyik a penz: ha negativ kimenet, ha pozitiv bemenet
 
     QR_PRETTY_DATE(String.class),
+    QR_DATE(Date.class),
 
     INSTANCE(Object.class);
 

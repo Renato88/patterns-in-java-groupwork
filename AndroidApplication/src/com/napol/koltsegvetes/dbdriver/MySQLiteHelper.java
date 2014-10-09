@@ -4,15 +4,12 @@
 package com.napol.koltsegvetes.dbdriver;
 
 import static com.napol.koltsegvetes.util.Util.debug;
-
-import java.util.Date;
-
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.napol.koltsegvetes.MainActivity;
 import com.napol.koltsegvetes.db.EColumnNames;
-import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 import com.napol.koltsegvetes.dbinterface.ISQLCommands;
 import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
@@ -26,26 +23,52 @@ public class MySQLiteHelper implements ISQLiteHelper
     private SQLiteDatabase db;
 
     // singleton instance
-    private static MySQLiteHelper instance;
+    private static MySQLiteHelper INSTANCE;
 
     // Android specific SQLite helper
     private AndroidSQLiteHelper helper;
 
+    private ISQLCommands sql = null;
+    private Context context = null;
+
     public static synchronized MySQLiteHelper instance()
     {
-        if (instance == null) instance = new MySQLiteHelper();
-        return instance;
+        if (INSTANCE == null) INSTANCE = new MySQLiteHelper();
+        return INSTANCE;
+    }
+
+    private MySQLiteHelper()
+    {
+        super();
+    }
+
+    public void init()
+    {
+        if (context == null) throw new NullPointerException("context not set");
+        if (sql == null) throw new NullPointerException("sql interface not set");
+
+        helper = new AndroidSQLiteHelper(context, sql);
+        if (db == null || !db.isOpen()) db = helper.getWritableDatabase();
     }
 
     public synchronized MySQLiteHelper setSqlInterface(ISQLCommands sql)
     {
-        helper = new AndroidSQLiteHelper(MainActivity.getContext(), sql);
-        if (db == null || !db.isOpen()) db = helper.getWritableDatabase();
+        this.sql = sql;
         return this;
     }
 
+    public synchronized MySQLiteHelper setContext(Context context)
+    {
+        if (context != null) this.context = context;
+        return this;
+    }
+
+    /**
+     * This is called only once in the life cycle of the object.
+     */
     public synchronized void onCreate()
     {
+        init();
         helper.onCreate(db);
     }
 
@@ -108,6 +131,13 @@ public class MySQLiteHelper implements ISQLiteHelper
     @Override
     public void execSQL(String sqlcommand)
     {
-        db.execSQL(sqlcommand);
+        try
+        {
+            db.execSQL(sqlcommand);
+        }
+        catch (SQLiteConstraintException e)
+        {
+            debug("unable to insert - constraint ex", e);
+        }
     }
 }

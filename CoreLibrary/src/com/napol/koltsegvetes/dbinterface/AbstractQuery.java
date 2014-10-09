@@ -9,7 +9,7 @@ public class AbstractQuery extends LinkedList<Object[]>
     private static final long serialVersionUID = 896112267010842564L;
 
     protected EColumnNames[] types;
-
+    
     @SafeVarargs
     public AbstractQuery(EColumnNames... types)
     {
@@ -32,12 +32,6 @@ public class AbstractQuery extends LinkedList<Object[]>
         return types.length;
     }
     
-    // public AbstractQuery setRecordLength(int n)
-    // {
-    // types = new EColumnNames[n];
-    // return this;
-    // }
-    
     public void checkRecord(Object[] record)
     {
         if (types == null || record.length < types.length) throw new IndexOutOfBoundsException(
@@ -56,12 +50,4 @@ public class AbstractQuery extends LinkedList<Object[]>
         checkRecord(record);
         super.addLast(record);
     }
-
-//    {
-//        android.sql.Query query;
-//        query.pointToNext();
-//        ret = new Object[5];
-//        ret[1] = query.element[4].toString();
-//        super.addLast(ret);
-//    }
 }
