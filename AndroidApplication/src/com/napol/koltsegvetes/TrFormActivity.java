@@ -25,6 +25,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.napol.koltsegvetes.db.ParcelableQuery;
 import com.napol.koltsegvetes.dbdriver.DataStore;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
@@ -104,7 +105,7 @@ public class TrFormActivity extends Activity
 
     private void finishAndReturn()
     {
-        AbstractQuery q = new AbstractQuery(TR_AMOUNT, TR_CAID, TR_CLUSTER, TR_DATE, TR_REMARK);
+        ParcelableQuery q = new ParcelableQuery(TR_AMOUNT, TR_CAID, TR_CLUSTER, TR_DATE, TR_REMARK);
         q.addRecord(
             Integer.parseInt(eta.getText().toString()),
             ((String) caid.getSelectedItem()).split("\\(")[0].trim(),
@@ -113,7 +114,7 @@ public class TrFormActivity extends Activity
             etr.getText().toString());
         
         Bundle b = new Bundle();
-        b.putSerializable(MainActivity.KEY_ABSQR, q);
+        b.putParcelable(MainActivity.KEY_ABSQR, q);
 
         Intent i = new Intent();
         i.putExtras(b);

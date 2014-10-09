@@ -3,7 +3,6 @@ package com.napol.koltsegvetes;
 import static com.napol.koltsegvetes.util.Util.debug;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.ListIterator;
 
 import android.content.Context;
@@ -22,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.napol.koltsegvetes.db.EColumnNames;
+import com.napol.koltsegvetes.db.ParcelableQuery;
 import com.napol.koltsegvetes.dbdriver.DataStore;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
@@ -77,6 +77,11 @@ public class MainActivity extends ActionBarActivity
                 e.printStackTrace();
             }
             return null;
+        }
+
+        public AbstractQuery getQuery()
+        {
+            return query;
         }
 
         @Override
@@ -138,6 +143,7 @@ public class MainActivity extends ActionBarActivity
     }
 
     DataStore db;
+    TransactionListAdapter ladapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -157,13 +163,13 @@ public class MainActivity extends ActionBarActivity
         // MyListAdapter<String> listAdapter = new
         // MyListAdapter<String>(context, android.R.layout.simple_list_item_1);
 
-        TransactionListAdapter listAdapter = new TransactionListAdapter(this, q, R.layout.mainlw_item);
+        ladapter = new TransactionListAdapter(this, q, R.layout.mainlw_item);
         // MyListAdapter<String> listAdapter = new
         // MyListAdapter<String>(context, R.layout.simple_tw);
         // listAdapter.add("Proba");
 
         lw = (ListView) findViewById(R.id.mainlw);
-        lw.setAdapter(listAdapter);
+        lw.setAdapter(ladapter);
     }
 
     @Override
@@ -195,13 +201,22 @@ public class MainActivity extends ActionBarActivity
     {
         if (resultCode == RESULT_OK)
         {
-            ArrayList<Object[]> q;
+            ParcelableQuery q;
             switch (requestCode)
             {
                 case REQUEST_NEWTR:
-                    q = (ArrayList<Object[]>) data.getExtras().getSerializable(KEY_ABSQR);
-                    Toast.makeText(this, String.format("%s", q.get(0)[0].toString()), Toast.LENGTH_LONG).show();
-//                    debug("q = %s %s %s %s", q.getTypes()[0], q.getTypes()[1], q.getFirst()[0].toString(), q.getFirst()[1].toString());
+                    q = (ParcelableQuery) data.getExtras().getParcelable(KEY_ABSQR);
+                    if (q.size() > 0)
+                    {
+                        db.insert(q.getTypes(), q.getFirst());
+                        ladapter.getQuery().appendQuery(q);
+                        ladapter.notifyDataSetChanged();
+                    }
+
+                    // Toast.makeText(this,
+                    // String.format("%s %s - %s",
+                    // q.get(0)[0].toString(), q.get(0)[1].toString(), q.getTypes()[0].name()), Toast.LENGTH_LONG).show();
+                    // debug("q = %s %s %s %s", q.getTypes()[0], q.getTypes()[1], q.getFirst()[0].toString(), q.getFirst()[1].toString());
                     break;
 
                 default:
@@ -209,7 +224,7 @@ public class MainActivity extends ActionBarActivity
             }
         }
     }
-    
+
     @SuppressWarnings("unused")
     private void insertDummyDate()
     {

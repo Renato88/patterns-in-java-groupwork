@@ -1,6 +1,6 @@
 package com.napol.koltsegvetes;
 
-import static com.napol.koltsegvetes.db.EColumnNames.CA_BALANCE;
+import static com.napol.koltsegvetes.db.EColumnNames.*;
 import static com.napol.koltsegvetes.db.EColumnNames.CA_ID;
 import static com.napol.koltsegvetes.db.EColumnNames.CA_NAME;
 import static com.napol.koltsegvetes.db.EColumnNames.CL_DIRECTION;
@@ -47,8 +47,13 @@ public class Main
         System.out.println(QR_PRETTY_DATE.table().name());
         System.out.println(CA_BALANCE.table().name());
 
-        AbstractQuery q = db.select(TR_AMOUNT, TR_CAID, TR_CLUSTER,
-            CA_BALANCE, CA_NAME);
+        AbstractQuery q = db.select(TR_AMOUNT, TR_CAID, TR_CLUSTER, CA_BALANCE, CA_NAME);
+        
+        AbstractQuery q1 = new AbstractQuery(TR_AMOUNT, TR_CLUSTER, CL_NAME);
+        q1.addRecord(12, "Kutyagumi", "ugyanaz");
+        
+        q.appendQuery(q1);
+        
         for (Object[] r : q)
         {
             System.out.println("----------------------------");
@@ -59,20 +64,21 @@ public class Main
                     + " - " + t.toString(r[i] != null ? r[i] : "null"));
             }
         }
+        System.out.println("----------------------------");
 
         Map<EColumnNames, Object> row = new HashMap<>();
-        
+
         row.clear();
         row.put(TR_AMOUNT, 40000);
         row.put(TR_REMARK, "10 bax narancs nektar");
         row.put(TR_CAID, "potp");
         db.insert(row);
-        
+
         row.clear();
         row.put(CA_ID, "potp");
         row.put(CA_NAME, "Peti Otp Bank Szamla");
         db.insert(row);
-        
+
         row.clear();
         row.put(CL_NAME, "alberlet");
         row.put(CL_DIRECTION, -1);
@@ -82,7 +88,7 @@ public class Main
         row.put(CL_NAME, "osztondij");
         row.put(CL_DIRECTION, 1);
         db.insert(row);
-        
+
         // testing Abstract query
         AbstractQuery table = new AbstractQuery(TR_AMOUNT, TR_REMARK);
         table.addRecord(1231, "Kutyafule");
@@ -90,7 +96,7 @@ public class Main
         System.out.println(table.isEmpty());
         System.out.println(table.getFirst()[0]);
     }
-    
+
     public static void main(String[] args)
     {
         new Main();
