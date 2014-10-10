@@ -28,12 +28,18 @@ public enum EColumnNames
     CL_NAME("varchar(20) primary key not null unique"), //
     CL_DIRECTION("integer"), // milyen iranyba folyik a penz: ha negativ kimenet, ha pozitiv bemenet
 
+    QR_INTEGER(Integer.class),
     QR_PRETTY_DATE(String.class),
     QR_DATE(Date.class),
 
     INSTANCE(Object.class);
 
-    private static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("yy-MM-dd");
+    public static final String opLess = "<";
+    public static final String opMore = ">";
+    public static final String opEqual = "=";
+    public static final String opLike = "like";
+    
+    private static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private final String sqltype;
     private final Class<?> javatype;
     private final ETableNames table;
@@ -116,28 +122,40 @@ public enum EColumnNames
     {
         try
         {
-            if (javatype != Date.class) throw new ParseException("", 0);
+            if (javatype != Date.class) throw new ParseException("This is not a date type (data != Date.class)", 0);
             return defaultDateFormat.parse(data);
+        }
+        catch (NullPointerException e)
+        {
+            return "";
         }
         catch (ParseException e)
         {
-            e.printStackTrace();
+            StackTraceElement el = e.getStackTrace()[0];
+            System.out.println(el.getClassName() + ":" + el.getLineNumber());
+            el = e.getStackTrace()[1];
+            System.out.println("   - " + el.getClassName() + ":" + el.getLineNumber());
         }
         return data;
     }
 
     public String toString(Object data)
     {
-        if (javatype == Integer.class) { return data.toString(); }
-
-        if (javatype == Date.class)
+        if (javatype == Integer.class)
         {
-            Object tmp = data;
-            if (data instanceof String) tmp = toDate((String) tmp);
-            if (data instanceof Date) return defaultDateFormat.format((Date) tmp);
+            return data.toString();
         }
 
-        else if (javatype == String.class) return (String) data;
+        else if (javatype == Date.class)
+        {
+            if (data instanceof String) data = toDate((String) data);
+            if (data instanceof Date) return defaultDateFormat.format((Date) data);
+        }
+
+        else if (javatype == String.class)
+        {
+            return (String) data;
+        }
 
         return null;
     }
@@ -145,10 +163,19 @@ public enum EColumnNames
     public String toQuoteString(Object data)
     {
         String str = toString(data);
-        if (str == null) return null;
-        
+        if (str == null)
+        {
+            System.out.println("THIS IS NULL");
+            return null;
+        }
+
         if (javatype == Integer.class) return str;
 
         return toQuote(str);
+    }
+    
+    public String sqlwhere(Object comperand, String operator)
+    {
+        return sqlname() + operator + toQuoteString(comperand);
     }
 }

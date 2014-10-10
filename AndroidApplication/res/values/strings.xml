@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Menu items  -->
+    <string name="action_settings">Settings</string>
+    <string name="action_newtr">New Tranzaction</string>
+    
     <string name="app_name">Polcz Koltsegvetes</string>
     <string name="trformac_name">Polcz New Tranzaction</string>
     <string name="mainac_name">Polcz Koltsegvetes</string>
     <string name="hello_world">Hello world!</string>
-    <string name="str_trform_remark">remark, comment</string>
+    <string name="trform_remark">Remark, comment</string>
+    <string name="trform_amount">Amount</string>
     
-    <!-- Menu items  -->
-    <string name="action_settings">Settings</string>
-    <string name="action_newtr">New Tranzaction</string>
-    <string name="str_trform_amount">Amount</string>
+    <string name="lorem_ipsum">Elmentem a fogorvoshoz mert nagyon fajt a fogam es ezert koltottem eleg sokat, bizony sokat koltottem a fene egye meg</string>
+    <string name="sample_date">2010-03-20</string>
+    <string name="sample_short_text">ProbaText</string>
+    <string name="str_update_entry">Update entry</string>
+    <string name="str_delete_entry">Delete entry</string>
 
 </resources>

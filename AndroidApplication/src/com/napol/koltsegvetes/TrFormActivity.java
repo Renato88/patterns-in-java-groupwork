@@ -31,6 +31,9 @@ import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
 public class TrFormActivity extends Activity
 {
+    private static String DEF_CA = "pkez";
+    private static String DEF_CL = "Elelem";
+    
     DataStore db;
 
     private DatePicker dp;
@@ -63,19 +66,27 @@ public class TrFormActivity extends Activity
         caid = (Spinner) findViewById(R.id.trform_caid);
         dp = (DatePicker) findViewById(R.id.trform_date);
 
+        int icl = 0, i = 0;
         ArrayAdapter<String> acl = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinned_dropdown_item);
         for (Object[] r : qcl)
         {
             acl.add(r[0] + " (" + ((Integer) r[1] < 0 ? "KI" : "BE") + ")");
+            if (r[0].toString().startsWith(DEF_CL)) icl = i;
+            ++i;
         }
         cl.setAdapter(acl);
+        cl.setSelection(icl);
 
+        int icaid = 0, j = 0;
         ArrayAdapter<String> acaid = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinned_dropdown_item);
         for (Object[] r : qcaid)
         {
             acaid.add(r[0] + " (" + r[1] + ")");
+            if (r[1].toString().equalsIgnoreCase(DEF_CA)) icaid = j;
+            j++;
         }
         caid.setAdapter(acaid);
+        caid.setSelection(icaid);
 
         // dp.setOnLongClickListener(new OnLongClickListener()
         // {

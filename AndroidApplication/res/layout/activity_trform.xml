@@ -18,15 +18,14 @@
             android:id="@+id/trform_amount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/str_trform_amount"
-            android:text="0"
+            android:hint="@string/trform_amount"
             android:inputType="phone" />
 
         <EditText
             android:id="@+id/trform_remark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/str_trform_remark" />
+            android:hint="@string/trform_remark" />
 
         <Spinner
             android:id="@+id/trform_caid"

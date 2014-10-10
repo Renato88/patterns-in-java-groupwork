@@ -16,6 +16,11 @@ import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
  * @author Péter Polcz <ppolcz@gmail.com>
  * 
  * Created on September 21, 2014, 7:59 AM
+ * 
+ * Important remarks:
+ * [1] retrieve last insert row ID:
+ *  > 'select last_insert_rowid()' --> doesn't work if a new session is started
+ *  > 'select * from sqlite_sequence' --> works fine every time
  */
 public abstract class AbstractDataStore
 {
@@ -180,11 +185,11 @@ public abstract class AbstractDataStore
      * @param table
      * @param c
      * @param v
-     * @return
+     * @return last_insert_rowid()
      * 
      * @author Polcz Péter <ppolcz@gmail.com>
      */
-    public synchronized int insert(EColumnNames[] c, Object[] v)
+    public synchronized int insert(EColumnNames[] c, Object... v)
     {
         ETableNames table = c[0].table();
         if (c.length != v.length) throw new IndexOutOfBoundsException("cols.length != vals.length");
@@ -198,19 +203,24 @@ public abstract class AbstractDataStore
             vals += ", " + c[i].toQuoteString(v[i]);
         }
         sql = sql + " (" + cols.substring(2) + ") values (" + vals.substring(2) + ")";
+        System.out.println(sql);
 
         // insert into table
-        helper.execSQL(sql);
+        if (!helper.execSQL(sql)) return -1;
+        return helper.lastInsertRowID();
 
-        if (ETableNames.TRANZACTIONS == table)
-        {
-            EColumnNames id = EColumnNames.TR_ID;
-            sql = String.format("select %s from %s order by %s desc limit 1", id.sqlname(), table.sqlname(), id.sqlname());
-            AbstractQuery query = helper.execSQL(sql, id);
-            return (Integer) query.getFirst()[0];
-        }
-
-        return 0;
+        // AbstractQuery q = helper.execSQL("select last_insert_rowid()", QR_INTEGER);
+        // if (q.size() > 0) return (Integer) q.getFirst()[0];
+        //
+        // if (ETableNames.TRANZACTIONS == table)
+        // {
+        // EColumnNames id = EColumnNames.TR_ID;
+        // sql = String.format("select %s from %s order by %s desc limit 1", id.sqlname(), table.sqlname(), id.sqlname());
+        // AbstractQuery query = helper.execSQL(sql, id);
+        // return (Integer) query.getFirst()[0];
+        // }
+        //
+        // return 0;
     }
 
     public synchronized int insert(Map<EColumnNames, Object> values)
@@ -227,6 +237,13 @@ public abstract class AbstractDataStore
         }
 
         return insert(cols, vals);
+    }
+
+    public synchronized boolean delete(ETableNames t, String whereStatement)
+    {
+        String sql = "delete from " + t.sqlname() + " where " + whereStatement;
+        helper.execSQL(sql);
+        return true;
     }
 
     /**

@@ -14,7 +14,23 @@ import android.util.Log;
 
 public class Util {
     
-    private static String TAG = "polpe>";
+    private static String TAG = "pcz>";
+
+    public static void error (String format) {
+        Log.e(TAG, getCodeLocation(4) + " - " + format);
+    }
+
+    public static void error (String format, Throwable ex) {
+        Log.e(TAG, "Exception catched: " + getCodeLocation(4) + " - " + format, ex);
+    }
+
+    public static void error (String format, Object ... args) {
+        Log.e(TAG, getCodeLocation(4) + " - " + String.format(format, args));
+    }
+
+    public static void error () {
+        Log.e(TAG, getCodeLocation(4));
+    }
 
     public static void debug (String format) {
         Log.d(TAG, getCodeLocation(4) + " - " + format);
@@ -30,6 +46,30 @@ public class Util {
 
     public static void debug () {
         Log.d(TAG, getCodeLocation(4));
+    }
+
+    public static void verbose (String format) {
+        Log.v(TAG, getCodeLocation(4) + " - " + format);
+    }
+
+    public static void verbose (String format, Object ... args) {
+        Log.v(TAG, getCodeLocation(4) + " - " + String.format(format, args));
+    }
+
+    public static void verbose () {
+        Log.v(TAG, getCodeLocation(4));
+    }
+
+    public static void info (String format) {
+        Log.i(TAG, getCodeLocation(4) + " - " + format);
+    }
+
+    public static void info (String format, Object ... args) {
+        Log.i(TAG, getCodeLocation(4) + " - " + String.format(format, args));
+    }
+
+    public static void info () {
+        Log.i(TAG, getCodeLocation(4));
     }
 
     @SuppressWarnings("unused")

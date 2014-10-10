@@ -22,7 +22,8 @@ public interface ISQLiteHelper
     ISQLiteHelper setSqlInterface(ISQLCommands sql);
     
     // supported SQL commands: insert, remove, update
-    void execSQL(String sqlcommand);
+    boolean execSQL(String sqlcommand);
+    int lastInsertRowID();
     
     // supported SQL commands: select
     AbstractQuery execSQL(String sqlcommand, EColumnNames... cols);

@@ -4,6 +4,7 @@
 package com.napol.koltsegvetes.dbdriver;
 
 import static com.napol.koltsegvetes.util.Util.debug;
+import android.app.DownloadManager.Query;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
@@ -114,7 +115,7 @@ public class MySQLiteHelper implements ISQLiteHelper
                 if (cols[i].sqltype().startsWith("varchar"))
                 {
                     obj[i] = cursor.getString(cursor.getColumnIndex(cols[i].sqlname()));
-                    obj[i] = cols[i].toDate((String) obj[i]);
+                    if (cols[i].isDateType()) obj[i] = cols[i].toDate((String) obj[i]);
                 }
                 else
                 {
@@ -129,15 +130,25 @@ public class MySQLiteHelper implements ISQLiteHelper
     }
 
     @Override
-    public void execSQL(String sqlcommand)
+    public boolean execSQL(String sqlcommand)
     {
         try
         {
             db.execSQL(sqlcommand);
+            return true;
         }
         catch (SQLiteConstraintException e)
         {
             debug("unable to insert - constraint ex", e);
         }
+        return false;
+    }
+
+    @Override
+    public int lastInsertRowID()
+    {
+        Cursor c = db.rawQuery("select last_insert_rowid()", null);
+        c.moveToFirst();
+        return c.getInt(0);
     }
 }

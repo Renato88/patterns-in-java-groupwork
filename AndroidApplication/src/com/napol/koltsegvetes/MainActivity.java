@@ -1,24 +1,26 @@
 package com.napol.koltsegvetes;
 
+import static com.napol.koltsegvetes.db.EColumnNames.TR_AMOUNT;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_CAID;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_DATE;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_REMARK;
 import static com.napol.koltsegvetes.util.Util.debug;
 
-import java.lang.reflect.Field;
 import java.util.ListIterator;
 
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 
 import com.napol.koltsegvetes.db.EColumnNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
@@ -27,124 +29,44 @@ import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
 public class MainActivity extends ActionBarActivity
 {
+    /** package private - these should be accessible to {@link TrFormActivity} */
     static final String KEY_ABSQR = "absqr";
     static final int REQUEST_NEWTR = 8888;
+
     private ListView lw;
+    private DataStore db;
+    private TransactionListAdapter ladapter;
 
-    class MyListAdapter<T> extends ArrayAdapter<T>
+    @SuppressLint("NewApi")
+    private OnItemLongClickListener itemLongClickListener = new OnItemLongClickListener()
     {
-
-        public MyListAdapter(Context context, int resource)
-        {
-            super(context, resource);
-        }
-
         @Override
-        public View getView(int position, View convertView, ViewGroup parent)
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
         {
-            // TODO Auto-generated method stub
-            return super.getView(position, convertView, parent);
-        }
-    }
-
-    class TransactionListAdapter extends ArrayAdapter<Object[]>
-    {
-        int resId;
-        Context context;
-        AbstractQuery query;
-
-        public TransactionListAdapter(Context context, AbstractQuery query, int resId)
-        {
-            super(context, resId);
-            Log.d("<pcz> TransactionListAdapter", "start + resId = " + resId);
-            this.context = context;
-            this.query = query;
-            this.resId = resId;
-        }
-
-        Object getFieldValue(Field field)
-        {
-            try
-            {
-                return field.get(null);
-            }
-            catch (IllegalAccessException e)
-            {
-                e.printStackTrace();
-            }
-            catch (IllegalArgumentException e)
-            {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        public AbstractQuery getQuery()
-        {
-            return query;
-        }
-
-        @Override
-        public int getCount()
-        {
-            return query.size();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            Log.d("<pcz> getView", "StartLine + position = " + position);
-            View rowView = convertView;
-            if (rowView == null)
-            {
-                // nr. of columns in the record
-                int n = query.getRecordLength();
-
-                // another approach: context.getSystemService(Context.LAYOUT...)
-                rowView = LayoutInflater.from(context).inflate(resId, null);
-                TextView[] holder = new TextView[n];
-
-                String pattern = "pcz_listview_item_tw_";
-                int nrOfInitialized = 0;
-
-                // go through all static fields and check whether its name
-                // matches the given pattern
-                for (Field field : R.id.class.getDeclaredFields())
-                {
-                    if (field.getName().startsWith(pattern))
+            PopupMenu popup = new PopupMenu(MainActivity.this, view);
+            popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+                public boolean onMenuItemClick (MenuItem item) {
+                    switch (item.getItemId())
                     {
-                        int i = Integer.parseInt(field.getName().replace(pattern, ""));
+                        case R.id.action_update:
+                            
+                            break;
 
-                        // check if the field's (i.e. textview's id) number is
-                        // less
-                        // than the number of columns in the query
-                        if (i < n)
-                        {
-                            holder[i] = (TextView) rowView.findViewById((Integer) getFieldValue(field));
-                            ++nrOfInitialized;
-                        }
+                        case R.id.action_delete:
+                            break;
+
+                        default:
+                            return false;
                     }
+                    return true;
                 }
-
-                if (nrOfInitialized != n) throw new IllegalArgumentException("nr. textview != nr. columns in the query");
-                rowView.setTag(holder);
-            }
-
-            TextView[] holder = (TextView[]) rowView.getTag();
-            Object[] entry = query.get(position);
-
-            for (int i = 0; i < holder.length; ++i)
-            {
-                holder[i].setText(query.getTypes()[i].toString(entry[i]));
-            }
-
-            return rowView;
+            });
+            popup.inflate(R.menu.trlist_longclick);
+            popup.show();
+            return false;
         }
-    }
-
-    DataStore db;
-    TransactionListAdapter ladapter;
-
+    };
+    
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -154,22 +76,21 @@ public class MainActivity extends ActionBarActivity
         db = DataStore.instance();
         db.setContext(this);
         db.onCreate();
-        // insertDummyDate();
 
-        AbstractQuery q = db.select(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
-
-        // MyListAdapter<String> listAdapter = new
-        // MyListAdapter<String>(context, R.layout.mainlw_item);
-        // MyListAdapter<String> listAdapter = new
-        // MyListAdapter<String>(context, android.R.layout.simple_list_item_1);
-
+//        EColumnNames[] cols = {TR_DATE, TR_AMOUNT};
+//        db.insert(cols, getResources().getString(R.string.sample_date), 1231);
+        
+        AbstractQuery q = db.select(TR_AMOUNT, TR_REMARK, TR_DATE, TR_CAID);
         ladapter = new TransactionListAdapter(this, q, R.layout.mainlw_item);
-        // MyListAdapter<String> listAdapter = new
-        // MyListAdapter<String>(context, R.layout.simple_tw);
-        // listAdapter.add("Proba");
 
+        for (Object[] r : q)
+        {
+            debug(r[2].toString());
+        }
+        
         lw = (ListView) findViewById(R.id.mainlw);
         lw.setAdapter(ladapter);
+        lw.setOnItemLongClickListener(itemLongClickListener);
     }
 
     @Override
@@ -208,9 +129,12 @@ public class MainActivity extends ActionBarActivity
                     q = (ParcelableQuery) data.getExtras().getParcelable(KEY_ABSQR);
                     if (q.size() > 0)
                     {
-                        db.insert(q.getTypes(), q.getFirst());
+                        int id = db.insert(q.getTypes(), q.getFirst());
                         ladapter.getQuery().appendQuery(q);
                         ladapter.notifyDataSetChanged();
+                        
+                        Toast.makeText(MainActivity.this, 
+                            "last_insert_rowid = " + id, Toast.LENGTH_LONG).show();
                     }
 
                     // Toast.makeText(this,
@@ -230,7 +154,7 @@ public class MainActivity extends ActionBarActivity
     {
         debug("Inserting some dummy data into the sqlite datebase");
         AbstractQuery query = new AbstractQuery();
-        query.setTypes(EColumnNames.TR_AMOUNT, EColumnNames.TR_REMARK);
+        query.setTypes(TR_AMOUNT, TR_REMARK);
         query.addRecord(1200, "Kajat vettem ennyiert");
         query.addRecord(3200, "Lidl-ben vasaroltam");
         query.addRecord(850, "Dezso ba menu");
