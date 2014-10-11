@@ -85,6 +85,7 @@ public class EColumnNamesTest
         Object obj = TR_DATE.toDate(str);
         assertTrue(obj instanceof Date);
         Date date = (Date) obj;
+        System.out.println(EColumnNames.fancyDateFormat.format(date));
         assertEquals(str, df.format(date));
     }
 

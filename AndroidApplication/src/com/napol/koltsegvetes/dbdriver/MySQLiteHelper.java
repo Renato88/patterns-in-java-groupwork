@@ -149,6 +149,7 @@ public class MySQLiteHelper implements ISQLiteHelper
     {
         Cursor c = db.rawQuery("select last_insert_rowid()", null);
         c.moveToFirst();
+        debug("LastINSERT_ROWID = %d", c.getInt(0));
         return c.getInt(0);
     }
 }

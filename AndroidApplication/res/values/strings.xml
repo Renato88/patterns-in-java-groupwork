@@ -17,5 +17,6 @@
     <string name="sample_short_text">ProbaText</string>
     <string name="str_update_entry">Update entry</string>
     <string name="str_delete_entry">Delete entry</string>
+    <string name="sample_id">12</string>
 
 </resources>

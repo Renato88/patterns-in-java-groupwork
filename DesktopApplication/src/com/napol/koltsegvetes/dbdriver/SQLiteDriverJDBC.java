@@ -121,19 +121,29 @@ public class SQLiteDriverJDBC implements ISQLiteHelper
     }
 
     @Override
-    public void execSQL(String sqlcommand)
+    public boolean execSQL(String sqlcommand)
     {
         try
         {
             Statement s = c.createStatement();
             s.executeUpdate(sqlcommand);
             s.close();
+            return true;
         }
         catch (SQLException e)
         {
             System.out.println("pcz> error ocured while inserting this row: \npcz>   " + sqlcommand);
-            e.printStackTrace();
+            new SQLException().printStackTrace();
+            // e.printStackTrace();
         }
+        return false;
+    }
+
+    @Override
+    public int lastInsertRowID()
+    {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 }

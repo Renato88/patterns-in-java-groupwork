@@ -39,7 +39,8 @@ public enum EColumnNames
     public static final String opEqual = "=";
     public static final String opLike = "like";
     
-    private static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    public static final SimpleDateFormat defaultDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    public static final SimpleDateFormat fancyDateFormat = new SimpleDateFormat("yyyy-MM-dd MMMM EEEE", Locale.getDefault());
     private final String sqltype;
     private final Class<?> javatype;
     private final ETableNames table;
@@ -141,6 +142,8 @@ public enum EColumnNames
 
     public String toString(Object data)
     {
+        if (data == null) return "null";
+        
         if (javatype == Integer.class)
         {
             return data.toString();

@@ -1,24 +1,17 @@
 package com.napol.koltsegvetes;
 
 import static com.napol.koltsegvetes.db.EColumnNames.*;
-import static com.napol.koltsegvetes.db.EColumnNames.CA_ID;
-import static com.napol.koltsegvetes.db.EColumnNames.CA_NAME;
-import static com.napol.koltsegvetes.db.EColumnNames.CL_DIRECTION;
-import static com.napol.koltsegvetes.db.EColumnNames.CL_NAME;
-import static com.napol.koltsegvetes.db.EColumnNames.QR_PRETTY_DATE;
-import static com.napol.koltsegvetes.db.EColumnNames.TR_AMOUNT;
-import static com.napol.koltsegvetes.db.EColumnNames.TR_CAID;
-import static com.napol.koltsegvetes.db.EColumnNames.TR_CLUSTER;
-import static com.napol.koltsegvetes.db.EColumnNames.TR_REMARK;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.napol.koltsegvetes.db.AbstractDataStore;
 import com.napol.koltsegvetes.db.EColumnNames;
+import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.dbdriver.SQLiteDriverJDBC;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
+import com.napol.koltsegvetes.net.NetworkInterface;
 
 /**
  * @author Péter Polcz <ppolcz@gmail.com>
@@ -75,6 +68,24 @@ public class Main
         db.insert(row);
 
         row.clear();
+        row.put(TR_AMOUNT, 4000);
+        row.put(TR_REMARK, "10 bax narancs nektar");
+        row.put(TR_CAID, "potp");
+        db.insert(row);
+
+        row.clear();
+        row.put(TR_AMOUNT, 400);
+        row.put(TR_REMARK, "10 bax narancs nektar");
+        row.put(TR_CAID, "potp");
+        db.insert(row);
+
+        row.clear();
+        row.put(TR_AMOUNT, 40);
+        row.put(TR_REMARK, "10 bax narancs nektar");
+        row.put(TR_CAID, "potp");
+        db.insert(row);
+
+        row.clear();
         row.put(CA_ID, "potp");
         row.put(CA_NAME, "Peti Otp Bank Szamla");
         db.insert(row);
@@ -95,6 +106,10 @@ public class Main
 
         System.out.println(table.isEmpty());
         System.out.println(table.getFirst()[0]);
+        
+        db.delete(ETableNames.TRANZACTIONS, TR_AMOUNT.sqlwhere(40000, opEqual));
+        
+        new Thread(new NetworkInterface()).start();
     }
 
     public static void main(String[] args)

@@ -38,7 +38,7 @@ public class TransactionListAdapter extends ArrayAdapter<Object[]>
 
     public TransactionListAdapter(Context context, AbstractQuery query, int resId)
     {
-        super(context, resId);
+        super(context, resId, query);
         debug("start + resId = " + resId);
         this.context = context;
         this.query = query;

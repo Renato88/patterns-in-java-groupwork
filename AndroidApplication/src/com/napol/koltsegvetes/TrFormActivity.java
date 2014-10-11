@@ -1,6 +1,6 @@
 package com.napol.koltsegvetes;
 
-import static com.napol.koltsegvetes.db.EColumnNames.CA_ID;
+import static com.napol.koltsegvetes.db.EColumnNames.*;
 import static com.napol.koltsegvetes.db.EColumnNames.CA_NAME;
 import static com.napol.koltsegvetes.db.EColumnNames.CL_DIRECTION;
 import static com.napol.koltsegvetes.db.EColumnNames.CL_NAME;
@@ -33,7 +33,7 @@ public class TrFormActivity extends Activity
 {
     private static String DEF_CA = "pkez";
     private static String DEF_CL = "Elelem";
-    
+
     DataStore db;
 
     private DatePicker dp;
@@ -116,14 +116,14 @@ public class TrFormActivity extends Activity
 
     private void finishAndReturn()
     {
-        ParcelableQuery q = new ParcelableQuery(TR_AMOUNT, TR_CAID, TR_CLUSTER, TR_DATE, TR_REMARK);
-        q.addRecord(
+        ParcelableQuery q = new ParcelableQuery(TR_ID, TR_AMOUNT, TR_CAID, TR_CLUSTER, TR_DATE, TR_REMARK);
+        q.addRecord(null, 
             Integer.parseInt(eta.getText().toString()),
             ((String) caid.getSelectedItem()).split("\\(")[0].trim(),
             ((String) cl.getSelectedItem()).split("\\(")[0].trim(),
             getDateFromDatePicker(),
             etr.getText().toString());
-        
+
         Bundle b = new Bundle();
         b.putParcelable(MainActivity.KEY_ABSQR, q);
 

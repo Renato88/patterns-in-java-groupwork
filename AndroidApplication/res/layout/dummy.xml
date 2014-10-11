@@ -4,6 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView android:id="@+id/pcz_listview_item_tw_3" />
+    <TextView android:id="@+id/pcz_listview_item_tw_10" />
 
 </LinearLayout>

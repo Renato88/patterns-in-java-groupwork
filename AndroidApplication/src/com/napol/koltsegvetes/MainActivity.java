@@ -3,7 +3,9 @@ package com.napol.koltsegvetes;
 import static com.napol.koltsegvetes.db.EColumnNames.TR_AMOUNT;
 import static com.napol.koltsegvetes.db.EColumnNames.TR_CAID;
 import static com.napol.koltsegvetes.db.EColumnNames.TR_DATE;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_ID;
 import static com.napol.koltsegvetes.db.EColumnNames.TR_REMARK;
+import static com.napol.koltsegvetes.db.EColumnNames.opEqual;
 import static com.napol.koltsegvetes.util.Util.debug;
 
 import java.util.ListIterator;
@@ -12,17 +14,17 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.PopupMenu;
+import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.Toast;
-import android.widget.PopupMenu.OnMenuItemClickListener;
 
-import com.napol.koltsegvetes.db.EColumnNames;
+import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
 import com.napol.koltsegvetes.dbdriver.DataStore;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
@@ -41,7 +43,7 @@ public class MainActivity extends ActionBarActivity
     private OnItemLongClickListener itemLongClickListener = new OnItemLongClickListener()
     {
         @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
+        public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id)
         {
             PopupMenu popup = new PopupMenu(MainActivity.this, view);
             popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -53,6 +55,9 @@ public class MainActivity extends ActionBarActivity
                             break;
 
                         case R.id.action_delete:
+                            db.delete(ETableNames.TRANZACTIONS, TR_ID.sqlwhere(ladapter.getItem(position)[0], opEqual));
+                            ladapter.remove(ladapter.getItem(position));
+                            ladapter.notifyDataSetChanged();
                             break;
 
                         default:
@@ -77,11 +82,8 @@ public class MainActivity extends ActionBarActivity
         db.setContext(this);
         db.onCreate();
 
-//        EColumnNames[] cols = {TR_DATE, TR_AMOUNT};
-//        db.insert(cols, getResources().getString(R.string.sample_date), 1231);
-        
-        AbstractQuery q = db.select(TR_AMOUNT, TR_REMARK, TR_DATE, TR_CAID);
-        ladapter = new TransactionListAdapter(this, q, R.layout.mainlw_item);
+        AbstractQuery q = db.select(TR_ID, TR_AMOUNT, TR_REMARK, TR_DATE, TR_CAID);
+        ladapter = new TransactionListAdapter(this, q, R.layout.mainlw_item2);
 
         for (Object[] r : q)
         {
@@ -130,6 +132,7 @@ public class MainActivity extends ActionBarActivity
                     if (q.size() > 0)
                     {
                         int id = db.insert(q.getTypes(), q.getFirst());
+                        q.getFirst()[0] = id;
                         ladapter.getQuery().appendQuery(q);
                         ladapter.notifyDataSetChanged();
                         
