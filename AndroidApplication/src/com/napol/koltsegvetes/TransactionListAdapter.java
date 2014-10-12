@@ -43,7 +43,7 @@ public class TransactionListAdapter extends ArrayAdapter<Object[]>
         this.context = context;
         this.query = query;
         this.resId = resId;
-        
+
         calcTwCount();
     }
 
@@ -52,33 +52,33 @@ public class TransactionListAdapter extends ArrayAdapter<Object[]>
         twIndices = new ArrayList<Integer>();
         twIds = new ArrayList<Integer>();
         View rowView = LayoutInflater.from(context).inflate(resId, null);
-        
+
         for (Field field : R.id.class.getDeclaredFields())
         {
             if (field.getName().startsWith(TW_PATTERN))
             {
-                info(field.getName());
+                // info(field.getName());
 
                 int i = Integer.parseInt(field.getName().replace(TW_PATTERN, ""));
                 int id = (Integer) getFieldValue(field);
                 View tw = rowView.findViewById(id);
-                
-                if (tw != null) 
+
+                if (tw != null)
                 {
                     verbose("index = %d, id = %d", i, id);
                     twIndices.add(i);
                     twIds.add(id);
                 }
-                else 
+                else
                 {
                     verbose("index = %d  IS NULL", i);
                 }
             }
         }
-        
+
         if (twIds.size() != twIndices.size()) throw new AssertionError("twIds.size() != twIndices.size()");
     }
-    
+
     Object getFieldValue(Field field)
     {
         try
@@ -110,7 +110,7 @@ public class TransactionListAdapter extends ArrayAdapter<Object[]>
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-        info("position = " + position);
+        // info("position = " + position);
         View rowView = convertView;
         if (rowView == null)
         {
@@ -133,18 +133,18 @@ public class TransactionListAdapter extends ArrayAdapter<Object[]>
         for (int i = 0; i < holder.length; ++i)
         {
             int index = twIndices.get(i);
-            info("i = %d, tw_index = %d, n = %d", i, index, n);
-            if (index < n) 
+            // info("i = %d, tw_index = %d, n = %d", i, index, n);
+            if (index < n)
             {
                 holder[i].setText(query.getTypes()[index].toDisplayString(entry[index]));
-                if (entry[index] instanceof Date) info("THIS IS A DATE");
-                if (entry[index] instanceof String) info("THIS IS A STRING: '%s'", entry[index]);
-                
-                info("col = %s, val = '%s'", query.getTypes()[index].name(), 
-                    query.getTypes()[index].toDisplayString(entry[index]));
+                // if (entry[index] instanceof Date) info("THIS IS A DATE");
+                // if (entry[index] instanceof String) info("THIS IS A STRING: '%s'", entry[index]);
+
+                // info("col = %s, val = '%s'", query.getTypes()[index].name(),
+                // query.getTypes()[index].toDisplayString(entry[index]));
             }
         }
-        
+
         return rowView;
     }
 }

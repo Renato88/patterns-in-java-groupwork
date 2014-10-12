@@ -4,6 +4,8 @@ import static com.napol.koltsegvetes.db.EColumnNames.CA_ID;
 import static com.napol.koltsegvetes.db.EColumnNames.CA_NAME;
 import static com.napol.koltsegvetes.db.EColumnNames.CL_DIRECTION;
 import static com.napol.koltsegvetes.db.EColumnNames.CL_NAME;
+import static com.napol.koltsegvetes.db.EColumnNames.opEqual;
+import static com.napol.koltsegvetes.util.Debug.debug;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -254,6 +256,15 @@ public abstract class AbstractDataStore
         return true;
     }
 
+    public synchronized AbstractQuery select(ETableNames t, String where)
+    {
+        String sql = "SELECT * FROM " + t.sqlname() + " WHERE " + where;
+        debug(sql);
+
+        ArrayList<EColumnNames> cols = EColumnNames.getColumns(t);
+        return helper.execSQL(sql, cols.toArray(new EColumnNames[cols.size()]));
+    }
+    
     /**
      * @author Polcz Péter <ppolcz@gmail.com>
      * Generates a SELECT SQL command from the given columns using their natural joint product.
@@ -262,7 +273,18 @@ public abstract class AbstractDataStore
     @SafeVarargs
     public synchronized final AbstractQuery select(EColumnNames... cols)
     {
-        String sqlwhere = "";
+        return select("", cols);
+    }
+    
+    /**
+     * @author Polcz Péter <ppolcz@gmail.com>
+     * @param where
+     * @param cols
+     * @return
+     */
+    @SafeVarargs
+    public synchronized final AbstractQuery select(String where, EColumnNames... cols)
+    {
         String sqlcols = "";
         String sqltables = "";
         String sql = "SELECT %s FROM %s";
@@ -285,10 +307,10 @@ public abstract class AbstractDataStore
                 // if the table of current column's reference do no appear in the query
                 if (!tables.contains(c.ref().table())) continue;
 
-                sqlwhere += " and " + c.sqlname() + " = " + c.ref().sqlname();
+                where += " and " + c.sqlwhere(c.ref().sqlname(), opEqual);
             }
         }
-        if (!sqlwhere.isEmpty()) sqlwhere = " WHERE " + sqlwhere.substring(5);
+        if (!where.isEmpty()) where = " WHERE " + where.substring(5);
 
         // generate tables list
         for (ETableNames t : tables)
@@ -298,8 +320,8 @@ public abstract class AbstractDataStore
         for (EColumnNames c : cols)
             sqlcols += ", " + c.sqlname();
 
-        sql = String.format(sql, sqlcols.substring(2), sqltables.substring(2) + sqlwhere);
-        System.out.println(sql);
+        sql = String.format(sql, sqlcols.substring(2), sqltables.substring(2) + where);
+        debug(sql);
 
         return helper.execSQL(sql, cols);
     }

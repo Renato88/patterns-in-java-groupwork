@@ -8,8 +8,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.widget.Toast;
 
 import com.napol.koltsegvetes.db.EColumnNames;
+import com.napol.koltsegvetes.db.ParcelableQuery;
 import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 import com.napol.koltsegvetes.dbinterface.ISQLCommands;
 import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
@@ -102,7 +104,7 @@ public class MySQLiteHelper implements ISQLiteHelper
             return null;
         }
 
-        AbstractQuery ret = new AbstractQuery().setTypes(cols);
+        AbstractQuery ret = new ParcelableQuery().setTypes(cols);
         int n = cols.length;
 
         cursor.moveToFirst();
@@ -124,7 +126,7 @@ public class MySQLiteHelper implements ISQLiteHelper
             ret.addRecord(obj);
             cursor.moveToNext();
         }
-
+        
         return ret;
     }
 
@@ -133,6 +135,7 @@ public class MySQLiteHelper implements ISQLiteHelper
     {
         try
         {
+            debug(sqlcommand);
             db.execSQL(sqlcommand);
             return true;
         }

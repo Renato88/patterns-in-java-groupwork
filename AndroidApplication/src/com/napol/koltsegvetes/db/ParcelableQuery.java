@@ -1,5 +1,7 @@
 package com.napol.koltsegvetes.db;
 
+import java.util.List;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,6 +11,11 @@ public class ParcelableQuery extends AbstractQuery implements Parcelable
 {
     private static final long serialVersionUID = 4473379121176629630L;
 
+    public ParcelableQuery(List<EColumnNames> cols)
+    {
+        super(cols);
+    }
+    
     public ParcelableQuery(EColumnNames... cols)
     {
         super(cols);

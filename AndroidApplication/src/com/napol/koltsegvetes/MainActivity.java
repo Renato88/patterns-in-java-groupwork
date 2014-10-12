@@ -13,6 +13,7 @@ import java.util.ListIterator;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
@@ -20,9 +21,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
@@ -33,10 +34,12 @@ public class MainActivity extends ActionBarActivity
 {
     /** package private - these should be accessible to {@link TrFormActivity} */
     static final String KEY_ABSQR = "absqr";
-    static final int REQUEST_NEWTR = 8888;
+    static final int REQUEST_NEWTR = 1001;
+    static final int REQUEST_UPDATETR = 1002;
 
     private ListView lw;
     private DataStore db;
+    private AbstractQuery q;
     private TransactionListAdapter ladapter;
 
     @SuppressLint("NewApi")
@@ -46,16 +49,22 @@ public class MainActivity extends ActionBarActivity
         public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id)
         {
             PopupMenu popup = new PopupMenu(MainActivity.this, view);
-            popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-                public boolean onMenuItemClick (MenuItem item) {
+            popup.setOnMenuItemClickListener(new OnMenuItemClickListener()
+            {
+                public boolean onMenuItemClick(MenuItem item)
+                {
+                    String sqlwhere = TR_ID.sqlwhere(ladapter.getItem(position)[q.getPosition(TR_ID)], opEqual);
+                    Toast.makeText(MainActivity.this, sqlwhere, Toast.LENGTH_LONG).show();
                     switch (item.getItemId())
                     {
                         case R.id.action_update:
-                            
+                            Intent i = new Intent(MainActivity.this, TrFormActivity.class);
+                            i.putExtra(KEY_ABSQR, (Parcelable) db.select(ETableNames.TRANZACTIONS, sqlwhere));
+                            startActivityForResult(i, REQUEST_UPDATETR);
                             break;
 
                         case R.id.action_delete:
-                            db.delete(ETableNames.TRANZACTIONS, TR_ID.sqlwhere(ladapter.getItem(position)[0], opEqual));
+                            db.delete(ETableNames.TRANZACTIONS, sqlwhere);
                             ladapter.remove(ladapter.getItem(position));
                             ladapter.notifyDataSetChanged();
                             break;
@@ -71,7 +80,7 @@ public class MainActivity extends ActionBarActivity
             return false;
         }
     };
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -82,14 +91,14 @@ public class MainActivity extends ActionBarActivity
         db.setContext(this);
         db.onCreate();
 
-        AbstractQuery q = db.select(TR_ID, TR_AMOUNT, TR_REMARK, TR_DATE, TR_CAID);
+        q = db.select(TR_ID, TR_AMOUNT, TR_REMARK, TR_DATE, TR_CAID);
         ladapter = new TransactionListAdapter(this, q, R.layout.mainlw_item2);
 
         for (Object[] r : q)
         {
             debug(r[2].toString());
         }
-        
+
         lw = (ListView) findViewById(R.id.mainlw);
         lw.setAdapter(ladapter);
         lw.setOnItemLongClickListener(itemLongClickListener);
@@ -135,9 +144,9 @@ public class MainActivity extends ActionBarActivity
                         q.getFirst()[0] = id;
                         ladapter.getQuery().appendQuery(q);
                         ladapter.notifyDataSetChanged();
-                        
-                        Toast.makeText(MainActivity.this, 
-                            "last_insert_rowid = " + id, Toast.LENGTH_LONG).show();
+
+                        // Toast.makeText(MainActivity.this,
+                        // "last_insert_rowid = " + id, Toast.LENGTH_LONG).show();
                     }
 
                     // Toast.makeText(this,

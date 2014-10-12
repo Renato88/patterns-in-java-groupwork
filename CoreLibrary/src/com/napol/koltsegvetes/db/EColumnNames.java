@@ -1,9 +1,11 @@
 package com.napol.koltsegvetes.db;
 
+import static com.napol.koltsegvetes.util.Debug.*;
 import static com.napol.koltsegvetes.db.ETableNames.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -18,7 +20,7 @@ public enum EColumnNames
     CA_NAME("varchar(20)"), // folyoszamla neve ('Otp Bank Folyoszamla')
     CA_DATE(SQL_TYPE_DATE), // utolso valtozas datuma - VAN-E ERRE SZUKSEG?
     CA_BALANCE(SQL_TYPE_INTEGER), // utolso egyenleg - VAN-E ERRE SZUKSEG?
-    CA_INSERT_DATE(SQL_TYPE_DATE), 
+    CA_INSERT_DATE(SQL_TYPE_DATE),
 
     CL_NAME("varchar(20) primary key not null unique"), //
     CL_DIRECTION(SQL_TYPE_INTEGER), // milyen iranyba folyik a penz: ha negativ kimenet, ha pozitiv bemenet
@@ -32,12 +34,12 @@ public enum EColumnNames
     TR_CLNAME(CL_NAME), // a tranzakcio 'klasztere': mobilfeltoltes, napi szuksegletek, luxus stb...
     TR_REMARK("varchar(128)"), // megjegyzes, komment
     TR_INSERT_DATE(SQL_TYPE_DATE),
-    
+
     /* spar, lidl, aldi, dechatlon, ikea, groby, auchan, dezsoba, izlelo, itkmenza */
     MK_ID(SQL_TYPE_8BYTEKEY), // 8 karakteres id
     MK_NAME("varchar(20)"), // neve
     MK_INSERT_DATE(SQL_TYPE_DATE), // mikor szurtam be
-    
+
     PI_ID(SQL_TYPE_AUTOIDKEY), // autoincrement id
     PI_DATE(SQL_TYPE_DATE), // mikor vasaroltam
     PI_AMOUNT(SQL_TYPE_INTEGER), // mennyiert
@@ -45,21 +47,22 @@ public enum EColumnNames
     PI_MKID(MK_ID), // hol
     PI_CLNAME(CL_NAME), // milyen tipusba sorolhato a vasarlas: lasd CLUSTERS
     PI_INSERT_DATE(SQL_TYPE_DATE), // mikor szurtam be
-    
+
     QR_INTEGER(Integer.class),
     QR_PRETTY_DATE(String.class),
     QR_DATE(Date.class),
 
-    INSTANCE(Object.class);
-    
+    NONE(Object.class);
+
     public static final String opLess = "<";
     public static final String opMore = ">";
     public static final String opEqual = "=";
     public static final String opLike = "like";
-    
+
     public static final SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ", Locale.getDefault());
     public static final SimpleDateFormat fancyDateFormat = new SimpleDateFormat("yyyy-MM-dd MMMM EEEE", Locale.getDefault());
     public static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
     private final String sqltype;
     private final Class<?> javatype;
     private final ETableNames table;
@@ -137,41 +140,31 @@ public enum EColumnNames
     {
         return name().equals(table.prefix() + COL_INSERT_DATE);
     }
-    
+
     private String toQuote(String str)
     {
         return "'" + str + "'";
     }
 
+    // @formatter:off
     public Object toDate(String data)
     {
         try
         {
-            if (javatype != Date.class) throw new ParseException("This is not a date type (data != Date.class)", 0);
-            return isoDateFormat.parse(data);
+            if (javatype != Date.class) return data;
+            try { return isoDateFormat.parse(data); } catch (ParseException e) { debug(e); }
+            try { return simpleDateFormat.parse(data); } catch (ParseException e) { debug(e); }
         }
-        catch (NullPointerException e)
-        {
-            return "";
-        }
-        catch (ParseException e)
-        {
-            StackTraceElement el = e.getStackTrace()[0];
-            System.out.println(el.getClassName() + ":" + el.getLineNumber());
-            el = e.getStackTrace()[1];
-            System.out.println("   - " + el.getClassName() + ":" + el.getLineNumber());
-        }
+        catch (NullPointerException e) { debug(e); return ""; }
         return data;
     }
+    // @formatter:on
 
     private String toString(Object data, SimpleDateFormat format)
     {
         if (data == null) return "null";
-        
-        if (javatype == Integer.class)
-        {
-            return data.toString();
-        }
+
+        if (javatype == Integer.class) return data.toString();
 
         else if (javatype == Date.class)
         {
@@ -179,10 +172,7 @@ public enum EColumnNames
             if (data instanceof Date) return format.format((Date) data);
         }
 
-        else if (javatype == String.class)
-        {
-            return (String) data;
-        }
+        else if (javatype == String.class) { return (String) data; }
 
         return null;
     }
@@ -200,14 +190,24 @@ public enum EColumnNames
 
         return toQuote(str);
     }
-    
+
     public String toDisplayString(Object data)
     {
         return toString(data, simpleDateFormat);
     }
-    
+
     public String sqlwhere(Object comperand, String operator)
     {
         return sqlname() + operator + toSqlString(comperand);
+    }
+    
+    public static ArrayList<EColumnNames> getColumns(ETableNames t)
+    {
+        ArrayList<EColumnNames> ret = new ArrayList<EColumnNames>();
+        for (EColumnNames c : values())
+        {
+            if (c.table == t) ret.add(c);
+        }
+        return ret;
     }
 }
