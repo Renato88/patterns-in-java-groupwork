@@ -7,7 +7,7 @@ import static com.napol.koltsegvetes.db.EColumnNames.CL_NAME;
 import static com.napol.koltsegvetes.db.EColumnNames.QR_DATE;
 import static com.napol.koltsegvetes.db.EColumnNames.TR_AMOUNT;
 import static com.napol.koltsegvetes.db.EColumnNames.TR_CAID;
-import static com.napol.koltsegvetes.db.EColumnNames.TR_CLUSTER;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_CLNAME;
 import static com.napol.koltsegvetes.db.EColumnNames.TR_DATE;
 import static com.napol.koltsegvetes.db.EColumnNames.TR_REMARK;
 
@@ -111,12 +111,12 @@ public class TrFormActivity extends Activity
 
     private String getDateFromDatePicker()
     {
-        return QR_DATE.toString(new GregorianCalendar(dp.getYear(), dp.getMonth(), dp.getDayOfMonth()).getTime());
+        return QR_DATE.toDisplayString(new GregorianCalendar(dp.getYear(), dp.getMonth(), dp.getDayOfMonth()).getTime());
     }
 
     private void finishAndReturn()
     {
-        ParcelableQuery q = new ParcelableQuery(TR_ID, TR_AMOUNT, TR_CAID, TR_CLUSTER, TR_DATE, TR_REMARK);
+        ParcelableQuery q = new ParcelableQuery(TR_ID, TR_AMOUNT, TR_CAID, TR_CLNAME, TR_DATE, TR_REMARK);
         q.addRecord(null, 
             Integer.parseInt(eta.getText().toString()),
             ((String) caid.getSelectedItem()).split("\\(")[0].trim(),

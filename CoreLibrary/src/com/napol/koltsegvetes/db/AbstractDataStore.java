@@ -1,7 +1,12 @@
 package com.napol.koltsegvetes.db;
 
-import static com.napol.koltsegvetes.db.EColumnNames.*;
+import static com.napol.koltsegvetes.db.EColumnNames.CA_ID;
+import static com.napol.koltsegvetes.db.EColumnNames.CA_NAME;
+import static com.napol.koltsegvetes.db.EColumnNames.CL_DIRECTION;
+import static com.napol.koltsegvetes.db.EColumnNames.CL_NAME;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +52,17 @@ public abstract class AbstractDataStore
             created = true;
         }
     }
+    
+    public synchronized void onDestroy()
+    {
+        
+    }
 
+    public synchronized void onUpgrade()
+    {
+        
+    }
+    
     /**
      * Factory method of the helper
      * @return {@link ISQLiteHelper} instance to initialize this.helper
@@ -199,28 +214,21 @@ public abstract class AbstractDataStore
         String vals = "";
         for (int i = 0; i < c.length; ++i)
         {
+            if (c[i] == table.getInsertDateColumn()) continue;
             cols += ", " + c[i].sqlname();
-            vals += ", " + c[i].toQuoteString(v[i]);
+            vals += ", " + c[i].toSqlString(v[i]);
         }
+        
+        // append insert_date column
+        cols += ", " + table.getInsertDateColumn().sqlname();
+        vals += ", " + table.getInsertDateColumn().toSqlString(new Date());
+        
         sql = sql + " (" + cols.substring(2) + ") values (" + vals.substring(2) + ")";
         System.out.println(sql);
 
         // insert into table
         if (!helper.execSQL(sql)) return -1;
         return helper.lastInsertRowID();
-
-        // AbstractQuery q = helper.execSQL("select last_insert_rowid()", QR_INTEGER);
-        // if (q.size() > 0) return (Integer) q.getFirst()[0];
-        //
-        // if (ETableNames.TRANZACTIONS == table)
-        // {
-        // EColumnNames id = EColumnNames.TR_ID;
-        // sql = String.format("select %s from %s order by %s desc limit 1", id.sqlname(), table.sqlname(), id.sqlname());
-        // AbstractQuery query = helper.execSQL(sql, id);
-        // return (Integer) query.getFirst()[0];
-        // }
-        //
-        // return 0;
     }
 
     public synchronized int insert(Map<EColumnNames, Object> values)

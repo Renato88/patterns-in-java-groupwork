@@ -93,7 +93,7 @@ public class EColumnNamesTest
     public void testToString()
     {
         String str = "2014-03-20";
-        assertEquals(str, TR_DATE.toString(str));
+        assertEquals(str, TR_DATE.toDisplayString(str));
         assertEquals("2014-03-20", str);
     }
 

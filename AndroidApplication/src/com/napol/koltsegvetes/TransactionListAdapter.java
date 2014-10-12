@@ -136,12 +136,12 @@ public class TransactionListAdapter extends ArrayAdapter<Object[]>
             info("i = %d, tw_index = %d, n = %d", i, index, n);
             if (index < n) 
             {
-                holder[i].setText(query.getTypes()[index].toString(entry[index]));
+                holder[i].setText(query.getTypes()[index].toDisplayString(entry[index]));
                 if (entry[index] instanceof Date) info("THIS IS A DATE");
                 if (entry[index] instanceof String) info("THIS IS A STRING: '%s'", entry[index]);
                 
                 info("col = %s, val = '%s'", query.getTypes()[index].name(), 
-                    query.getTypes()[index].toString(entry[index]));
+                    query.getTypes()[index].toDisplayString(entry[index]));
             }
         }
         

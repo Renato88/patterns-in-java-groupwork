@@ -4,7 +4,6 @@
 package com.napol.koltsegvetes.dbdriver;
 
 import static com.napol.koltsegvetes.util.Util.debug;
-import android.app.DownloadManager.Query;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;

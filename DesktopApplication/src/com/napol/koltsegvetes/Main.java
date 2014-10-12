@@ -40,9 +40,9 @@ public class Main
         System.out.println(QR_PRETTY_DATE.table().name());
         System.out.println(CA_BALANCE.table().name());
 
-        AbstractQuery q = db.select(TR_AMOUNT, TR_CAID, TR_CLUSTER, CA_BALANCE, CA_NAME);
+        AbstractQuery q = db.select(TR_AMOUNT, TR_CAID, TR_CLNAME, CA_BALANCE, CA_NAME);
         
-        AbstractQuery q1 = new AbstractQuery(TR_AMOUNT, TR_CLUSTER, CL_NAME);
+        AbstractQuery q1 = new AbstractQuery(TR_AMOUNT, TR_CLNAME, CL_NAME);
         q1.addRecord(12, "Kutyagumi", "ugyanaz");
         
         q.appendQuery(q1);
@@ -53,8 +53,8 @@ public class Main
             for (int i = 0; i < r.length; ++i)
             {
                 EColumnNames t = q.getTypes()[i];
-                System.out.println(t.name() + ": " + t.toQuoteString(r[i] != null ? r[i] : "null")
-                    + " - " + t.toString(r[i] != null ? r[i] : "null"));
+                System.out.println(t.name() + ": " + t.toSqlString(r[i] != null ? r[i] : "null")
+                    + " - " + t.toDisplayString(r[i] != null ? r[i] : "null"));
             }
         }
         System.out.println("----------------------------");
@@ -83,21 +83,6 @@ public class Main
         row.put(TR_AMOUNT, 40);
         row.put(TR_REMARK, "10 bax narancs nektar");
         row.put(TR_CAID, "potp");
-        db.insert(row);
-
-        row.clear();
-        row.put(CA_ID, "potp");
-        row.put(CA_NAME, "Peti Otp Bank Szamla");
-        db.insert(row);
-
-        row.clear();
-        row.put(CL_NAME, "alberlet");
-        row.put(CL_DIRECTION, -1);
-        db.insert(row);
-
-        row.clear();
-        row.put(CL_NAME, "osztondij");
-        row.put(CL_DIRECTION, 1);
         db.insert(row);
 
         // testing Abstract query
