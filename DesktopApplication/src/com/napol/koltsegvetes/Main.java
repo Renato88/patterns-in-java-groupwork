@@ -1,16 +1,24 @@
 package com.napol.koltsegvetes;
 
-import static com.napol.koltsegvetes.db.EColumnNames.*;
+import static com.napol.koltsegvetes.db.EColumnNames.CA_BALANCE;
+import static com.napol.koltsegvetes.db.EColumnNames.CA_NAME;
+import static com.napol.koltsegvetes.db.EColumnNames.CL_NAME;
+import static com.napol.koltsegvetes.db.EColumnNames.QR_PRETTY_DATE;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_AMOUNT;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_CAID;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_CLNAME;
+import static com.napol.koltsegvetes.db.EColumnNames.TR_REMARK;
+import static com.napol.koltsegvetes.db.EColumnNames.opEqual;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.napol.koltsegvetes.db.AbstractDataStore;
+import com.napol.koltsegvetes.db.AbstractQuery;
 import com.napol.koltsegvetes.db.EColumnNames;
 import com.napol.koltsegvetes.db.ETableNames;
+import com.napol.koltsegvetes.dbdriver.ISQLiteHelper;
 import com.napol.koltsegvetes.dbdriver.SQLiteDriverJDBC;
-import com.napol.koltsegvetes.dbinterface.AbstractQuery;
-import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
 import com.napol.koltsegvetes.net.NetworkInterface;
 
 /**

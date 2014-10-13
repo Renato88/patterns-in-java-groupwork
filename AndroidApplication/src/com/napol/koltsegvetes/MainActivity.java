@@ -25,10 +25,11 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
 
+import com.napol.koltsegvetes.R;
+import com.napol.koltsegvetes.db.AbstractQuery;
+import com.napol.koltsegvetes.db.DataStore;
 import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
-import com.napol.koltsegvetes.dbdriver.DataStore;
-import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
 public class MainActivity extends ActionBarActivity
 {

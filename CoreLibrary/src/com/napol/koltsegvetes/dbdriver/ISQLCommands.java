@@ -1,4 +1,4 @@
-package com.napol.koltsegvetes.dbinterface;
+package com.napol.koltsegvetes.dbdriver;
 
 import java.util.List;
 

@@ -28,11 +28,12 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.napol.koltsegvetes.R;
+import com.napol.koltsegvetes.db.AbstractQuery;
+import com.napol.koltsegvetes.db.DataStore;
 import com.napol.koltsegvetes.db.EColumnNames;
 import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
-import com.napol.koltsegvetes.dbdriver.DataStore;
-import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
 public class TrFormActivity extends Activity
 {

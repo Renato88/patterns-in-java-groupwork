@@ -15,9 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.napol.koltsegvetes.dbinterface.AbstractQuery;
-import com.napol.koltsegvetes.dbinterface.ISQLCommands;
-import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
+import com.napol.koltsegvetes.dbdriver.ISQLCommands;
+import com.napol.koltsegvetes.dbdriver.ISQLiteHelper;
 
 /** 
  * @author Péter Polcz <ppolcz@gmail.com>

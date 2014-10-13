@@ -1,9 +1,10 @@
-package com.napol.koltsegvetes.dbdriver;
+package com.napol.koltsegvetes.db;
 
 import android.content.Context;
 
 import com.napol.koltsegvetes.db.AbstractDataStore;
-import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
+import com.napol.koltsegvetes.dbdriver.ISQLiteHelper;
+import com.napol.koltsegvetes.dbdriver.MySQLiteHelper;
 
 public class DataStore extends AbstractDataStore
 {

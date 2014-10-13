@@ -20,7 +20,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.napol.koltsegvetes.dbinterface.AbstractQuery;
+import com.napol.koltsegvetes.R;
+import com.napol.koltsegvetes.db.AbstractQuery;
 
 /**
  * @author Polcz Péter <ppolcz@gmail.com>

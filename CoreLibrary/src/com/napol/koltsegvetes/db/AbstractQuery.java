@@ -1,4 +1,4 @@
-package com.napol.koltsegvetes.dbinterface;
+package com.napol.koltsegvetes.db;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.napol.koltsegvetes.db.EColumnNames;
 
 public class AbstractQuery extends LinkedList<Object[]>
 {

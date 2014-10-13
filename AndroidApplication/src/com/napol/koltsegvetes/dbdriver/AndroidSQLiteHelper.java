@@ -10,7 +10,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.napol.koltsegvetes.dbinterface.ISQLCommands;
+import com.napol.koltsegvetes.dbdriver.ISQLCommands;
 
 /**
  * @author Polcz Péter <ppolcz@gmail.com>

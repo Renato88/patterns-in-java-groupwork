@@ -6,10 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.napol.koltsegvetes.db.AbstractQuery;
 import com.napol.koltsegvetes.db.EColumnNames;
-import com.napol.koltsegvetes.dbinterface.ISQLCommands;
-import com.napol.koltsegvetes.dbinterface.ISQLiteHelper;
-import com.napol.koltsegvetes.dbinterface.AbstractQuery;
 
 /** 
  * @author Péter Polcz <ppolcz@gmail.com>

@@ -1,5 +1,6 @@
-package com.napol.koltsegvetes.dbinterface;
+package com.napol.koltsegvetes.dbdriver;
 
+import com.napol.koltsegvetes.db.AbstractQuery;
 import com.napol.koltsegvetes.db.EColumnNames;
 
 /** 
