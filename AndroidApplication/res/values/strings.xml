@@ -13,7 +13,7 @@
     <string name="trform_amount">Amount</string>
     
     <string name="lorem_ipsum">Elmentem a fogorvoshoz mert nagyon fajt a fogam es ezert koltottem eleg sokat, bizony sokat koltottem a fene egye meg</string>
-    <string name="sample_date">2010-03-20</string>
+    <string name="sample_date">2010&#8211;03&#8211;20</string>
     <string name="sample_short_text">ProbaText</string>
     <string name="str_update_entry">Update entry</string>
     <string name="str_delete_entry">Delete entry</string>

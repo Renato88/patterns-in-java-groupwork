@@ -1,12 +1,16 @@
 package com.napol.koltsegvetes.db;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Oct 13, 2014 7:27:52 PM
+ */
 public class AbstractQuery extends LinkedList<Object[]>
 {
     private static final long serialVersionUID = 896112267010842564L;

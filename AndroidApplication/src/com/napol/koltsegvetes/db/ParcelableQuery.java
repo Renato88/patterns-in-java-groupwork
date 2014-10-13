@@ -5,6 +5,11 @@ import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Oct 13, 2014 7:26:06 PM
+ */
 public class ParcelableQuery extends AbstractQuery implements Parcelable
 {
     private static final long serialVersionUID = 4473379121176629630L;

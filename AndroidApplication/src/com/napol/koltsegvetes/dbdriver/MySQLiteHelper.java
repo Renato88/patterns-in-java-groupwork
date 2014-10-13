@@ -1,6 +1,3 @@
-/**
- * Created on Sep 24, 2014 9:00:15 PM
- */
 package com.napol.koltsegvetes.dbdriver;
 
 import static com.napol.koltsegvetes.util.Util.debug;
@@ -8,16 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
-import android.widget.Toast;
 
 import com.napol.koltsegvetes.db.AbstractQuery;
 import com.napol.koltsegvetes.db.EColumnNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
-import com.napol.koltsegvetes.dbdriver.ISQLCommands;
-import com.napol.koltsegvetes.dbdriver.ISQLiteHelper;
 
 /**
  * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Sep 24, 2014 9:00:15 PM
  */
 public class MySQLiteHelper implements ISQLiteHelper
 {
@@ -28,7 +24,7 @@ public class MySQLiteHelper implements ISQLiteHelper
     private static MySQLiteHelper INSTANCE;
 
     // Android specific SQLite helper
-    private AndroidSQLiteHelper helper;
+    private MySQLiteOpenHelper helper;
 
     private ISQLCommands sql = null;
     private Context context = null;
@@ -49,7 +45,7 @@ public class MySQLiteHelper implements ISQLiteHelper
         if (context == null) throw new NullPointerException("context not set");
         if (sql == null) throw new NullPointerException("sql interface not set");
 
-        helper = new AndroidSQLiteHelper(context, sql);
+        helper = new MySQLiteOpenHelper(context, sql);
         if (db == null || !db.isOpen()) db = helper.getWritableDatabase();
     }
 

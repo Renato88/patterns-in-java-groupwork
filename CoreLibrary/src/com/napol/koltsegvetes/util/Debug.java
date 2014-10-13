@@ -1,6 +1,10 @@
 package com.napol.koltsegvetes.util;
 
-
+/**
+ * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Oct 13, 2014 7:28:15 PM
+ */
 public class Debug
 {
     private static final String TAG = "pcz> ";

@@ -31,6 +31,11 @@ import com.napol.koltsegvetes.db.DataStore;
 import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
 
+/**
+ * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Oct 13, 2014 7:25:33 PM
+ */
 public class MainActivity extends ActionBarActivity
 {
     /** package private - these should be accessible to {@link TrFormActivity} */

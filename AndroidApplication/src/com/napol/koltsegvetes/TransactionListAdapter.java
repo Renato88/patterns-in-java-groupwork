@@ -1,17 +1,10 @@
-/**
- * Created on Oct 10, 2014 9:52:50 AM
- */
-
 package com.napol.koltsegvetes;
 
 import static com.napol.koltsegvetes.util.Util.debug;
-import static com.napol.koltsegvetes.util.Util.error;
-import static com.napol.koltsegvetes.util.Util.info;
 import static com.napol.koltsegvetes.util.Util.verbose;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Date;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -20,11 +13,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.napol.koltsegvetes.R;
 import com.napol.koltsegvetes.db.AbstractQuery;
 
 /**
  * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Oct 10, 2014 9:52:50 AM
  */
 public class TransactionListAdapter extends ArrayAdapter<Object[]>
 {

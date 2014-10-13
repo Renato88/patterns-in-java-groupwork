@@ -39,8 +39,11 @@ public class NetworkInterface implements Runnable
                     System.out.println("Element = " + e);
                 }
 
+                s.close();
                 ok = true;
             }
+            
+            socket.close();
         }
         catch (IOException e)
         {

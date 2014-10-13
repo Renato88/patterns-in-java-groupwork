@@ -178,20 +178,6 @@ public abstract class AbstractDataStore
     @Deprecated
     public synchronized boolean insert(ETableNames table, Object[] obj)
     {
-        switch (table)
-        {
-            case CHARGE_ACCOUNTS:
-            {
-                // String sqlString = "...";
-                // helper.execute(sqlString);
-                break;
-            }
-            case TRANZACTIONS:
-            {
-
-                break;
-            }
-        }
         return true;
     }
 

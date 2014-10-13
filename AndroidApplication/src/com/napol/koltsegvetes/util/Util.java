@@ -12,6 +12,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+/**
+ * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Oct 13, 2014 7:27:26 PM
+ */
 public class Util {
     
     private static String TAG = "pcz>";

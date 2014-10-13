@@ -1,7 +1,3 @@
-/**
- * Created on Sep 24, 2014 9:50:50 PM
- */
-
 package com.napol.koltsegvetes.dbdriver;
 
 import static com.napol.koltsegvetes.util.Util.debug;
@@ -14,13 +10,15 @@ import com.napol.koltsegvetes.dbdriver.ISQLCommands;
 
 /**
  * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Sep 24, 2014 9:50:50 PM
  */
-public class AndroidSQLiteHelper extends SQLiteOpenHelper
+public class MySQLiteOpenHelper extends SQLiteOpenHelper
 {
     // required interface from the CoreLibrary
     private ISQLCommands sql;
 
-    AndroidSQLiteHelper(Context context, ISQLCommands sql)
+    MySQLiteOpenHelper(Context context, ISQLCommands sql)
     {
         super(context, sql.getFilename(), null, sql.getVersion());
         this.sql = sql;

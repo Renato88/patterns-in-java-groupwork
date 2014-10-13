@@ -6,6 +6,11 @@ import com.napol.koltsegvetes.db.AbstractDataStore;
 import com.napol.koltsegvetes.dbdriver.ISQLiteHelper;
 import com.napol.koltsegvetes.dbdriver.MySQLiteHelper;
 
+/**
+ * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Oct 13, 2014 7:25:59 PM
+ */
 public class DataStore extends AbstractDataStore
 {
     private static DataStore INSTANCE = null;

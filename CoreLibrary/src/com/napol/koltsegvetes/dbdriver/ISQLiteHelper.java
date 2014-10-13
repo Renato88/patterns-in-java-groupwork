@@ -19,13 +19,15 @@ public interface ISQLiteHelper
     void onOpen();
     void onClose();
     
-    // setters:
+    // setters
     ISQLiteHelper setSqlInterface(ISQLCommands sql);
     
     // supported SQL commands: insert, remove, update
     boolean execSQL(String sqlcommand);
-    int lastInsertRowID();
     
     // supported SQL commands: select
     AbstractQuery execSQL(String sqlcommand, EColumnNames... cols);
+
+    // additional functions
+    int lastInsertRowID();
 }

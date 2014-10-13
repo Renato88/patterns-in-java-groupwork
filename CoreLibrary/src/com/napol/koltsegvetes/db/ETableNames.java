@@ -27,12 +27,9 @@ public enum ETableNames
 
     private final String pref;
 
-    // private final EColumnNames insertDate;
-
     private ETableNames(String pref)
     {
         this.pref = pref;
-        // insertDate = EColumnNames.valueOf(pref + COL_INSERT_DATE);
     }
 
     public String prefix()
@@ -54,29 +51,6 @@ public enum ETableNames
     {
         for (ETableNames t : ETableNames.values())
             if (col.name().startsWith(t.pref)) return t;
-
-        // try
-        // {
-        // for (Field f : ETableNames.class.getDeclaredFields())
-        // {
-        // if (f.isEnumConstant() && col.name().startsWith(((ETableNames) (f.get(NONE))).pref))
-        // {
-        // return (ETableNames) (f.get(ETableNames.NONE));
-        // }
-        // }
-        // }
-        // catch (SecurityException e)
-        // {
-        // e.printStackTrace();
-        // }
-        // catch (IllegalArgumentException e)
-        // {
-        // e.printStackTrace();
-        // }
-        // catch (IllegalAccessException e)
-        // {
-        // e.printStackTrace();
-        // }
         return NONE;
     }
 

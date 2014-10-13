@@ -13,9 +13,9 @@ import static com.napol.koltsegvetes.db.EColumnNames.TR_REMARK;
 import static com.napol.koltsegvetes.util.Util.debug;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -28,18 +28,23 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.napol.koltsegvetes.R;
 import com.napol.koltsegvetes.db.AbstractQuery;
 import com.napol.koltsegvetes.db.DataStore;
 import com.napol.koltsegvetes.db.EColumnNames;
 import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
 
+/**
+ * @author Polcz Péter <ppolcz@gmail.com>
+ * 
+ * Created on Oct 13, 2014 7:25:54 PM
+ */
 public class TrFormActivity extends Activity
 {
-    private static final SimpleDateFormat F_YEAR = new SimpleDateFormat("yyyy");
-    private static final SimpleDateFormat F_MONTH = new SimpleDateFormat("MM");
-    private static final SimpleDateFormat F_DAY = new SimpleDateFormat("dd");
+    private static final Locale locale = Locale.getDefault();
+    private static final SimpleDateFormat F_YEAR = new SimpleDateFormat("yyyy", locale);
+    private static final SimpleDateFormat F_MONTH = new SimpleDateFormat("MM", locale);
+    private static final SimpleDateFormat F_DAY = new SimpleDateFormat("dd", locale);
 
     private String initialCa = "pkez";
     private String initialCl = "Elelem";
@@ -55,10 +60,10 @@ public class TrFormActivity extends Activity
     private ParcelableQuery q;
     private Object[] r;
 
-    private static final Calendar D_CALENDAR = Calendar.getInstance();
-    private static final int D_YEAR = D_CALENDAR.get(Calendar.YEAR);
-    private static final int D_MONTH = D_CALENDAR.get(Calendar.MONTH);
-    private static final int D_DAY = D_CALENDAR.get(Calendar.DAY_OF_MONTH);
+    // private static final Calendar D_CALENDAR = Calendar.getInstance();
+    // private static final int D_YEAR = D_CALENDAR.get(Calendar.YEAR);
+    // private static final int D_MONTH = D_CALENDAR.get(Calendar.MONTH);
+    // private static final int D_DAY = D_CALENDAR.get(Calendar.DAY_OF_MONTH);
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
