@@ -1,7 +1,11 @@
 package com.napol.koltsegvetes.db;
 
-import static com.napol.koltsegvetes.util.Debug.*;
-import static com.napol.koltsegvetes.db.ETableNames.*;
+import static com.napol.koltsegvetes.db.ETableNames.COL_INSERT_DATE;
+import static com.napol.koltsegvetes.db.ETableNames.SQL_TYPE_8BYTEKEY;
+import static com.napol.koltsegvetes.db.ETableNames.SQL_TYPE_AUTOIDKEY;
+import static com.napol.koltsegvetes.db.ETableNames.SQL_TYPE_DATE;
+import static com.napol.koltsegvetes.db.ETableNames.SQL_TYPE_INTEGER;
+import static com.napol.koltsegvetes.util.Debug.debug;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -16,11 +20,15 @@ import java.util.Locale;
  */
 public enum EColumnNames
 {
+    AC_ID(SQL_TYPE_AUTOIDKEY),
+    AC_USERNAME("varchar(50)"),
+    
     CA_ID(SQL_TYPE_8BYTEKEY), // folyoszamla ID (varchar: 'otp', 'kezp')
     CA_NAME("varchar(20)"), // folyoszamla neve ('Otp Bank Folyoszamla')
     CA_DATE(SQL_TYPE_DATE), // utolso valtozas datuma - VAN-E ERRE SZUKSEG?
     CA_BALANCE(SQL_TYPE_INTEGER), // utolso egyenleg - VAN-E ERRE SZUKSEG?
     CA_INSERT_DATE(SQL_TYPE_DATE),
+    CA_ACID(AC_ID),
 
     CL_NAME("varchar(20) primary key not null unique"), //
     CL_DIRECTION(SQL_TYPE_INTEGER), // milyen iranyba folyik a penz: ha negativ kimenet, ha pozitiv bemenet
@@ -34,6 +42,7 @@ public enum EColumnNames
     TR_CLNAME(CL_NAME), // a tranzakcio 'klasztere': mobilfeltoltes, napi szuksegletek, luxus stb...
     TR_REMARK("varchar(128)"), // megjegyzes, komment
     TR_INSERT_DATE(SQL_TYPE_DATE),
+    TR_ACID(AC_ID),
 
     /* spar, lidl, aldi, dechatlon, ikea, groby, auchan, dezsoba, izlelo, itkmenza */
     MK_ID(SQL_TYPE_8BYTEKEY), // 8 karakteres id
@@ -47,11 +56,18 @@ public enum EColumnNames
     PI_MKID(MK_ID), // hol
     PI_CLNAME(CL_NAME), // milyen tipusba sorolhato a vasarlas: lasd CLUSTERS
     PI_INSERT_DATE(SQL_TYPE_DATE), // mikor szurtam be
+    PI_ACID(AC_ID),
 
     QR_INTEGER(Integer.class),
     QR_PRETTY_DATE(String.class),
     QR_DATE(Date.class),
 
+    /*
+    MT_ID(SQL_TYPE_AUTOIDKEY),
+    MT_NAME("varchar(20)"),
+    MT_FNAME("varchar(40)"),
+     */
+    
     NONE(Object.class);
 
     public static final String opLess = "<";

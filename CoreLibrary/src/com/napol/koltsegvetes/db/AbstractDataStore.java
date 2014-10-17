@@ -30,7 +30,7 @@ import com.napol.koltsegvetes.dbdriver.ISQLiteHelper;
  */
 public abstract class AbstractDataStore
 {
-    private static final String DBNAME = "koltsegvetes.db";
+    private static final String DBNAME = "meta.db";
 
     private ISQLiteHelper helper = null;
     private boolean created = false;
@@ -56,7 +56,8 @@ public abstract class AbstractDataStore
     
     public synchronized void onDestroy()
     {
-        
+        created = false;
+        helper.onDestroy();
     }
 
     public synchronized void onUpgrade()
@@ -99,6 +100,41 @@ public abstract class AbstractDataStore
         return "CREATE TABLE " + table.sqlname() + " ( \n" + sqlcolsdecl(table.prefix()) + " );";
     }
 
+    /**
+     * @author Polcz Péter <ppolcz@gmail.com>
+     */
+    /* 
+    private final ISQLCommands sqlMetaHelper = new ISQLCommands()
+    {
+        
+        @Override
+        public List<String> sqlCreateTableCommands()
+        {
+            ArrayList<String> l = new ArrayList<String>();
+            l.add(sqlcreatetable(ETableNames.METATABLE));
+            return l;
+        }
+        
+        @Override
+        public boolean initAfterCreate()
+        {
+            return true;
+        }
+        
+        @Override
+        public int getVersion()
+        {
+            return 1;
+        }
+        
+        @Override
+        public String getFilename()
+        {
+            return DBNAME;
+        }
+    };
+     */
+    
     /** 
      * This is the interface that {@link ISQLiteHelper} (i.e. {@link SQLiteDriverJDBC}) will be given as a callback.
      * 
@@ -113,7 +149,7 @@ public abstract class AbstractDataStore
 
             for (ETableNames t : ETableNames.values())
             {
-                if (!t.isNone()) l.add(sqlcreatetable(t));
+                if (t.isSimpleTable()) l.add(sqlcreatetable(t));
             }
 
             return l;

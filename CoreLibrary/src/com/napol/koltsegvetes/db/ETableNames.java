@@ -9,6 +9,8 @@ import java.util.Locale;
  */
 public enum ETableNames
 {
+    ACCOUNTS("AC_"),
+    
     CHARGE_ACCOUNTS("CA_"), // folyoszamlak
     TRANZACTIONS("TR_"), // tranzakciok
     CLUSTERS("CL_"), // tranzakcio tipusok
@@ -16,6 +18,10 @@ public enum ETableNames
     MARKETS("MK_"), // nagyobb uzletek
     PRODUCT_INFO("PI_"), // termek informaciok - mit-hol-mennyiert
 
+    /*
+    METATABLE("MT_"), // metatabla
+     */
+    
     NONE(".");
 
     public static final String COL_INSERT_DATE = "INSERT_DATE";
@@ -24,7 +30,8 @@ public enum ETableNames
     public static final String SQL_TYPE_8BYTEKEY = "varchar(8) primary key not null unique";
     public static final String SQL_TYPE_DATE = "varchar(50)";
     public static final String SQL_TYPE_INTEGER = "integer";
-
+    
+    
     private final String pref;
 
     private ETableNames(String pref)
@@ -60,8 +67,13 @@ public enum ETableNames
         return EColumnNames.valueOf(pref + COL_INSERT_DATE);
     }
 
+    public boolean isSimpleTable()
+    {
+        return this != NONE /* && this != METATABLE */;
+    }
+    
     public boolean isNone()
     {
-        return pref.startsWith(".");
+        return this == NONE;
     }
 }

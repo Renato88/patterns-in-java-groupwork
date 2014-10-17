@@ -21,15 +21,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import com.napol.koltsegvetes.R;
 import com.napol.koltsegvetes.db.AbstractQuery;
 import com.napol.koltsegvetes.db.DataStore;
 import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.db.ParcelableQuery;
+import com.napol.koltsegvetes.dbdriver.MySQLiteHelper;
+import com.napol.koltsegvetes.dbdriver.MySQLiteOpenHelper;
+import com.napol.koltsegvetes.util.MetaUtil;
 
 /**
  * @author Polcz Péter <ppolcz@gmail.com>
@@ -90,6 +92,14 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        MetaUtil.GeneratePlantUML(DataStore.class);
+        MetaUtil.GeneratePlantUML(MainActivity.class);
+        MetaUtil.GeneratePlantUML(TrFormActivity.class);
+        MetaUtil.GeneratePlantUML(TransactionListAdapter.class);
+        MetaUtil.GeneratePlantUML(ParcelableQuery.class);
+        MetaUtil.GeneratePlantUML(MySQLiteHelper.class);
+        MetaUtil.GeneratePlantUML(MySQLiteOpenHelper.class);
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

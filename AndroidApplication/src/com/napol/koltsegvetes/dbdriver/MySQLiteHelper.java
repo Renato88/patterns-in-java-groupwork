@@ -48,6 +48,17 @@ public class MySQLiteHelper implements ISQLiteHelper
         helper = new MySQLiteOpenHelper(context, sql);
         if (db == null || !db.isOpen()) db = helper.getWritableDatabase();
     }
+    
+    public void reset()
+    {
+        if (db != null && db.isOpen()) db.close();
+        if (helper != null) helper.close();
+        db = null;
+        helper = null;
+        sql = null;
+        context = null;
+        System.gc();
+    }
 
     public synchronized MySQLiteHelper setSqlInterface(ISQLCommands sql)
     {
@@ -70,24 +81,24 @@ public class MySQLiteHelper implements ISQLiteHelper
         helper.onCreate(db);
     }
 
+    public synchronized void onOpen()
+    {
+        onCreate();
+    }
+
     public synchronized void onUpgrade(int newVersion)
     {
         helper.onUpgrade(db, 0, newVersion);
     }
 
-    public synchronized void onDestroy()
-    {
-        // TODO Auto-generated method stub
-    }
-
-    public synchronized void onOpen()
-    {
-        // TODO Auto-generated method stub
-    }
-
     public synchronized void onClose()
     {
-        // TODO Auto-generated method stub
+        reset();
+    }
+
+    public synchronized void onDestroy()
+    {
+        onClose();
     }
 
     @Override
