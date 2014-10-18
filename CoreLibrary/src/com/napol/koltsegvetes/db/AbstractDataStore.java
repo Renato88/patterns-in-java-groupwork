@@ -30,7 +30,7 @@ import com.napol.koltsegvetes.dbdriver.ISQLiteHelper;
  */
 public abstract class AbstractDataStore
 {
-    private static final String DBNAME = "koltsegvetes.db";
+    private static final String DBNAME = "meta.db";
 
     private ISQLiteHelper helper = null;
     private boolean created = false;
