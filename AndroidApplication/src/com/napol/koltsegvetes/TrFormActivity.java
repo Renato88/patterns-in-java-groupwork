@@ -49,7 +49,7 @@ public class TrFormActivity extends Activity
     private String initialCa = "pkez";
     private String initialCl = "Elelem";
 
-    DataStore db;
+    private DataStore db;
 
     private DatePicker dp;
     private Spinner caid;

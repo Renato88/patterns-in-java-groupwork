@@ -24,12 +24,12 @@ public class TransactionListAdapter extends ArrayAdapter<Object[]>
 {
     private static final String TW_PATTERN = "pcz_listview_item_tw_";
 
-    int resId;
+    private int resId;
     private ArrayList<Integer> twIndices;
     private ArrayList<Integer> twIds;
 
-    Context context;
-    AbstractQuery query;
+    private Context context;
+    private AbstractQuery query;
 
     public TransactionListAdapter(Context context, AbstractQuery query, int resId)
     {
@@ -74,7 +74,7 @@ public class TransactionListAdapter extends ArrayAdapter<Object[]>
         if (twIds.size() != twIndices.size()) throw new AssertionError("twIds.size() != twIndices.size()");
     }
 
-    Object getFieldValue(Field field)
+    private Object getFieldValue(Field field)
     {
         try
         {

@@ -20,6 +20,7 @@ import com.napol.koltsegvetes.db.ETableNames;
 import com.napol.koltsegvetes.dbdriver.ISQLiteHelper;
 import com.napol.koltsegvetes.dbdriver.SQLiteDriverJDBC;
 import com.napol.koltsegvetes.net.NetworkInterface;
+import com.napol.koltsegvetes.util.MetaUtil;
 
 /**
  * @author Péter Polcz <ppolcz@gmail.com>
@@ -40,6 +41,9 @@ public class Main
 
     public Main()
     {
+        MetaUtil.GeneratePlantUML(SQLiteDriverJDBC.class);
+        MetaUtil.GeneratePlantUML(NetworkInterface.class);
+        
         db.onCreate();
 
         // testing if EColumnNames works good
